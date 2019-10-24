@@ -1,0 +1,10 @@
+{
+  "printWidth": 80,
+  "requirePragma": false,
+  "tabWidth": 2,
+  "addTrailingCommas": true,
+  "inlineConditionals": true,
+  "inlineLoops": true,
+  "preferHashLabels": true,
+  "preferSingleQuotes": true
+}
