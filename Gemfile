@@ -26,6 +26,9 @@ gem 'sorbet-runtime'
 # TrueSkill
 gem 'trueskill', github: 'saulabs/trueskill', require: 'saulabs/trueskill'
 
+# Handle CORS
+gem 'rack-cors'
+
 group :development, :test do
   gem 'awesome_print'
   gem 'byebug'

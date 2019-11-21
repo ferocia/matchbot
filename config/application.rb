@@ -40,5 +40,12 @@ module Matchbot # rubocop:disable Style/ClassAndModuleChildren
     # config.autoload_paths = [
     #   Rails.root.join("app/commands").to_s
     # ]
+    #
+    config.middleware.insert_before 0, Rack::Cors do
+      allow do
+        origins '*'
+        resource '*', headers: :any, methods: %i[post]
+      end
+    end
   end
 end
