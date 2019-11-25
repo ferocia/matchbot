@@ -211,12 +211,13 @@ class SlackController < ApplicationController
     }]
 
     table = Terminal::Table.new(
-      title: "Leaderboard for :#{game.emoji_name}: #{game.name}",
       headings: headings,
       rows: rows,
     ).to_s
 
     <<~TXT
+      *Leaderboard for :#{game.emoji_name}: #{game.name}*
+
       ```
       #{table}
       ```
