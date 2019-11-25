@@ -3,41 +3,34 @@
 class Match < ApplicationRecord
   belongs_to :game
 
-  has_many :players, through: :teams
   has_many :results
-  has_many :teams, through: :results
   has_many :rating_events
+  has_many :teams, through: :results
+  has_many :players, through: :teams
 
   def calculate_ratings_for_players!
     # if this match has rating events, we don't want to re-calc
     return if rating_events.present?
 
-    # results, grouped by score (to handle draws), sorted by highest to lowest
-    grouped = results.group_by(&:score)
-      .sort_by { |k, _v| -k }.to_h
-
     places = []
     ratings = []
     trueskills = []
 
-    grouped.each_with_index do |group, i|
-      _, results = group
-      place = i + 1
+    results.each do |result|
+      r = result.team.players.map { |p| p.rating_for_game(game: game) }
+      t = result.team.players.map { |p| p.trueskill_for_game(game: game) }
 
-      results.each do |result|
-        r = result.team.players.map { |p| p.rating_for_game(game: game) }
-        t = result.team.players.map { |p| p.trueskill_for_game(game: game) }
-
-        ratings << r
-        trueskills << t
-        places << place
-      end
+      ratings << r
+      trueskills << t
+      places << result.place
     end
 
     # this gets us a hash, { [[TrueSkill::Rating]]: place }
     graph_input = trueskills.each_with_index.map do |trueskill, i|
       [trueskill, places[i]]
     end.to_h
+
+    ap graph_input
 
     graph = Saulabs::TrueSkill::FactorGraph.new(graph_input)
     # this _mutates_ the hash passed in
@@ -64,6 +57,16 @@ class Match < ApplicationRecord
           )
         end
       end
+    end
+  end
+
+  def undo!
+    ActiveRecord::Base.transaction do
+      rating_events.each(&:undo!)
+
+      results.destroy_all
+
+      destroy
     end
   end
 end

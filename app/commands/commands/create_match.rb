@@ -4,7 +4,8 @@ class Commands::CreateMatch
   # game_id => Game.id
   # results => [{
   #   players: [Player.id],
-  #   score: Float
+  #   score: ?Float,
+  #   place: ?Integer
   # }]
   def self.run(game_id:, results:)
     game = Game.find(game_id)
@@ -12,7 +13,7 @@ class Commands::CreateMatch
     results = results.map do |result|
       players = Player.find(result[:players])
       team = Team.find_or_create_by_players(players)
-      { team: team, score: result[:score] }
+      { team: team, score: result[:score], place: result[:place] }
     end
 
     players = results.map { |r| r[:team].players }.flatten

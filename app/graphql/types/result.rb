@@ -2,7 +2,8 @@
 
 class Types::Result < Types::Base::Object
   field :id, ID, null: false
-  field :score, Float, null: false
+  field :score, Float, null: true
+  field :place, Integer, null: false
   field :team, Types::Team, null: false
   field :match, Types::Match, null: false
 

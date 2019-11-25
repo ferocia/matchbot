@@ -29,6 +29,8 @@ gem 'trueskill', github: 'saulabs/trueskill', require: 'saulabs/trueskill'
 # Handle CORS
 gem 'rack-cors'
 
+gem 'terminal-table'
+
 group :development, :test do
   gem 'awesome_print'
   gem 'byebug'

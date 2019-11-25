@@ -4,24 +4,19 @@ class SlackController < ApplicationController
   def webhook
     body = parsed_body
 
-    ap body
+    text = case body[:command]
+           when 'result'
+             handle_result
+           when 'leaderboard'
+             handle_leaderboard
+           when 'undo'
+             handle_undo
+           else
+             # 'help' or unrecognized command
+             generate_help_text
+           end
 
-    game = Game.find_by_emoji(body[:emoji])
-    raise StandardError, "Can't find game with emoji \`#{content}\`" unless game
-
-    all_players = body[:results].map { |r| r[:players] }.flatten
-
-    game.ensure_ratings_created_for!(all_players)
-
-    m = Match.create!(game: game, teams: body[:results].map { |r| r[:team] })
-
-    body[:results].each do |result|
-      m.results.create!(team: result[:team], score: result[:score])
-    end
-
-    m.calculate_ratings_for_players!
-
-    render json: { text: generate_response_for_match(m), username: 'MatchBot' }
+    render json: { text: text, username: 'MatchBot' }
   end
 
   private
@@ -30,17 +25,55 @@ class SlackController < ApplicationController
     body = params.require(:text)
     split = body.split(' ')
     emoji = split.first
-    # the only support command is 'result'
-    first_result = parse_result(split.third)
-    second_result = parse_result(split.fourth)
+    command = split.second
+    args = split[2..]
 
-    { emoji: emoji, results: [first_result, second_result] }
+    { emoji: emoji, command: command, args: args }
+  end
+
+  def handle_result
+    body = parsed_body
+    emoji = body[:emoji]
+
+    game = Game.find_by_emoji(emoji)
+    raise StandardError, "Can't find game with emoji \`#{emoji}\`" unless game
+
+    results = body[:args].map do |arg|
+      parse_result(arg)
+    end
+
+    # make sure that all results have a score, or none do
+    has_score_on_all = results.all? { |r| r[:score].present? }
+    has_no_score_on_all = results.all? { |r| r[:score].nil? }
+
+    unless has_score_on_all || has_no_score_on_all
+      raise StandardError, "Can't mix scores and no scores on a match"
+    end
+
+    results = if has_score_on_all
+                # sort them correctly if the score is provided
+                results
+                  .group_by { |r| r[:score] }
+                  .sort_by { |k, _v| -k }
+                  .each_with_index.map do |group, i|
+                    _, group_results = group
+                    place = i + 1
+                    group_results.map { |r| r.merge(place: place) }
+                  end.flatten
+              else
+                results.each_with_index.map { |r, i| r.merge(place: i + 1) }
+              end
+
+
+    match = Commands::CreateMatch.run(game_id: game.id, results: results)
+
+    generate_response_for_match(match)
   end
 
   # result looks like 'Name+Name:Score'
   def parse_result(result)
     names, score_string = result.split(':')
-    score = score_string.to_f
+    score = score_string&.to_f
     names = names.split('+')
 
     players =
@@ -48,25 +81,31 @@ class SlackController < ApplicationController
         player = Player.find_by('name ilike ?', name)
         raise StandardError, "No player with name \`#{name}\`" unless player
 
-        player
+        player.id
       end
 
-    team = Team.find_or_create_by_players(players)
-
-    { score: score, players: players, team: team }
+    { score: score, players: players }
   end
 
   def generate_response_for_match(match)
     <<~RES
-      **Match Result for #{match.game.name}**
+      *Match Result for #{match.game.name}*
+
       ```
       #{
-        match.results.map do |r, _i|
-          "#{r.team.players.map(&:name).join(' + ')} scored #{r.score}"
+        match.results.order(place: :asc).map do |r, _i|
+          s = "#{r.place.ordinalize}: #{r.team.players.map(&:name).join(' + ')}"
+          if r.score.present?
+            "#{s} scored #{r.score}"
+          else
+            s
+          end
         end.join("\n")
       }
       ```
-      **Player Stats**:
+
+      *Player Stats*:
+
       ```
       #{
         match.players.map { |p| generate_player_text(match, p) }.join("\n")
@@ -96,5 +135,96 @@ class SlackController < ApplicationController
       end
 
     "#{player.name}: #{current.mean.round(4)} (#{delta_text})"
+  end
+
+  def generate_help_text
+    <<~HELP
+      *MatchBot Help*
+
+      ```
+      result name1+name2:score name3+name4:score
+        - teams are joined by a +, score follows the :
+        - teams can be one person (result name1:score)
+        - score is optional (result name1+name2 name3+name4)
+        - teams can have differing number of players (result name1+name2 name3)
+        - if no scores, winner is first team given, second place is second, etc
+        - if scores are provided the order doesn't matter
+        - scores must be in a "highest is winner" format if provided
+      help
+        - show this again
+      leaderboard
+        - show the leaderboard for the game
+      undo
+        - revert the previous result entry
+      ```
+    HELP
+  end
+
+  def handle_leaderboard
+    body = parsed_body
+
+    emoji = body[:emoji]
+
+    game = Game.find_by_emoji(emoji)
+    raise StandardError, "Can't find game with emoji \`#{emoji}\`" unless game
+
+    headings = ['Player', 'Mean', 'Played']
+
+    rows = game.ratings
+      .includes(:player)
+      .includes(:rating_events)
+      .order(mean: :desc)
+      .map do |rating|
+        played = rating.rating_events
+          .where('updated_at BETWEEN ? AND ?', 30.days.ago, Time.now)
+          .count
+
+        # If you add something here, make sure you update the headings as well
+        [
+          rating.player.name,
+          rating.mean.round(4),
+          { value: played, alignment: :right },
+        ]
+      end
+
+    # add the footer
+    rows << :separator
+    rows << [{
+      value: 'Played count over last 30 days',
+      alignment: :center,
+      colspan: headings.length,
+    }]
+    rows << [{
+      value: 'Mean over all time',
+      alignment: :center,
+      colspan: headings.length,
+    }]
+
+    Terminal::Table.new(
+      title: "Leaderboard for #{game.emoji.raw} #{game.name}",
+      headings: headings,
+      rows: rows,
+    ).to_s
+  end
+
+  def handle_undo
+    body = parsed_body
+
+    emoji = body[:emoji]
+
+    game = Game.find_by_emoji(emoji)
+    raise StandardError, "Can't find game with emoji \`#{emoji}\`" unless game
+
+    match = game.matches.last
+
+    match.undo!
+
+    leaderboard = handle_leaderboard
+
+    <<~TXT
+      Last match undone. Current leaderboard:
+
+      #{leaderboard}
+    TXT
   end
 end
