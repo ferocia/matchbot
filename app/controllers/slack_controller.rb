@@ -33,10 +33,18 @@ class SlackController < ApplicationController
     body = params.require(:text)
     split = body.split(' ')
     emoji = split.first
+
+    parsed = if emoji.start_with?(':')
+               stripped = emoji.gsub(':', '')
+               Emoji.find_by_alias(stripped).raw
+             else
+               emoji
+             end
+
     command = split.second
     args = split[2..]
 
-    { emoji: emoji, command: command, args: args }
+    { emoji: parsed, command: command, args: args }
   end
 
   def handle_result
