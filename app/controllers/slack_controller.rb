@@ -220,11 +220,17 @@ class SlackController < ApplicationController
       colspan: headings.length,
     }]
 
-    Terminal::Table.new(
+    table = Terminal::Table.new(
       title: "Leaderboard for #{game.emoji.raw} #{game.name}",
       headings: headings,
       rows: rows,
     ).to_s
+
+    <<~TXT
+      ```
+      #{table}
+      ```
+    TXT
   end
 
   def handle_undo
