@@ -211,7 +211,7 @@ class SlackController < ApplicationController
     }]
 
     table = Terminal::Table.new(
-      title: "Leaderboard for #{game.emoji.raw} #{game.name}",
+      title: "Leaderboard for :#{game.emoji_name}: #{game.name}",
       headings: headings,
       rows: rows,
     ).to_s
@@ -249,7 +249,7 @@ class SlackController < ApplicationController
       #{names}
 
       -----------------
-      Add a new player with `#{emoji} new_player <name>`
+      Add a new player with `:#{emoji}: new_player <name>`
     TXT
   end
 
