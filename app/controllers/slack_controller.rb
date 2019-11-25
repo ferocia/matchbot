@@ -11,6 +11,10 @@ class SlackController < ApplicationController
              handle_leaderboard
            when 'undo'
              handle_undo
+           when 'players'
+             handle_players_show
+           when 'new_player'
+             handle_players_add
            else
              # 'help' or unrecognized command
              generate_help_text
@@ -149,13 +153,17 @@ class SlackController < ApplicationController
         - teams can have differing number of players (result name1+name2 name3)
         - if no scores, winner is first team given, second place is second, etc
         - if scores are provided the order doesn't matter
-        - scores must be in a "highest is winner" format if provided
+        - scores must be in a "highest is winner" format if provided (i.e. you'll need to invert a golf score)
       help
         - show this again
       leaderboard
         - show the leaderboard for the game
       undo
         - revert the previous result entry
+      new_player name
+        - add a new player to the system.
+        - new player isavailable for all games on matchbot
+        - player names must be unique and are case insensitive
       ```
     HELP
   end
@@ -226,5 +234,30 @@ class SlackController < ApplicationController
 
       #{leaderboard}
     TXT
+  end
+
+  def handle_players_show
+    body = parsed_body
+    emoji = body[:emoji]
+
+    names = Player.all.map(&:name).join("\n")
+
+    <<~TXT
+      Available Players:
+
+      #{names}
+
+      -----------------
+      Add a new player with `#{emoji} new_player <name>`
+    TXT
+  end
+
+  def handle_players_add
+    body = parsed_body
+    name = body[:args].first
+
+    player = Player.create!(name: name)
+
+    "Player #{player.name} created!"
   end
 end
