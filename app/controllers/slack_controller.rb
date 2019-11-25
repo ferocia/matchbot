@@ -26,6 +26,10 @@ class SlackController < ApplicationController
   private
 
   def parsed_body
+    if params.require(:token) != ENV['SLACK_WEBHOOK_TOKEN']
+      raise StandardError, 'Unauthenticated'
+    end
+
     body = params.require(:text)
     split = body.split(' ')
     emoji = split.first
