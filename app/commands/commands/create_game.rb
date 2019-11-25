@@ -3,11 +3,8 @@
 class Commands::CreateGame
   def self.run(name:, emoji:)
     unicode = Emoji.find_by_unicode(emoji)
-    emoji_alias = Emoji.find_by_alias(emoji)
 
-    emoji_name = unicode&.name || emoji_alias&.name
-
-    raise StandardError, "couldn't find emoji '#{emoji}'" unless emoji_name
+    emoji_name = unicode&.name || emoji
 
     Game.create!(
       name: name,

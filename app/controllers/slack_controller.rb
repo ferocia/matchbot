@@ -32,27 +32,25 @@ class SlackController < ApplicationController
 
     body = params.require(:text)
     split = body.split(' ')
-    emoji = split.first
-
-    parsed = if emoji.start_with?(':')
-               stripped = emoji.gsub(':', '')
-               Emoji.find_by_alias(stripped).raw
-             else
-               emoji
-             end
+    emoji = split.first.gsub(':', '')
 
     command = split.second
     args = split[2..]
 
-    { emoji: parsed, command: command, args: args }
+    { emoji: emoji, command: command, args: args }
+  end
+
+  def game
+    body = parsed_body
+    game = Game.find_by(emoji_name: body[:emoji])
+
+    raise StandardError, "Can't find game with emoji \`#{emoji}\`" unless game
+
+    game
   end
 
   def handle_result
     body = parsed_body
-    emoji = body[:emoji]
-
-    game = Game.find_by_emoji(emoji)
-    raise StandardError, "Can't find game with emoji \`#{emoji}\`" unless game
 
     results = body[:args].map do |arg|
       parse_result(arg)
@@ -79,7 +77,6 @@ class SlackController < ApplicationController
               else
                 results.each_with_index.map { |r, i| r.merge(place: i + 1) }
               end
-
 
     match = Commands::CreateMatch.run(game_id: game.id, results: results)
 
@@ -181,14 +178,7 @@ class SlackController < ApplicationController
   end
 
   def handle_leaderboard
-    body = parsed_body
-
-    emoji = body[:emoji]
-
-    game = Game.find_by_emoji(emoji)
-    raise StandardError, "Can't find game with emoji \`#{emoji}\`" unless game
-
-    headings = ['Player', 'Mean', 'Played']
+    headings = %w[Player Mean Played]
 
     rows = game.ratings
       .includes(:player)
@@ -234,13 +224,6 @@ class SlackController < ApplicationController
   end
 
   def handle_undo
-    body = parsed_body
-
-    emoji = body[:emoji]
-
-    game = Game.find_by_emoji(emoji)
-    raise StandardError, "Can't find game with emoji \`#{emoji}\`" unless game
-
     match = game.matches.last
 
     match.undo!
