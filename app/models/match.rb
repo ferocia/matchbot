@@ -30,8 +30,6 @@ class Match < ApplicationRecord
       [trueskill, places[i]]
     end.to_h
 
-    ap graph_input
-
     graph = Saulabs::TrueSkill::FactorGraph.new(graph_input)
     # this _mutates_ the hash passed in
     graph.update_skills
