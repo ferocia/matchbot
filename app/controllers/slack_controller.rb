@@ -169,6 +169,8 @@ class SlackController < ApplicationController
         - show this again
       leaderboard
         - show the leaderboard for the game
+      players
+        - show a list of all available players
       undo
         - revert the previous result entry
       new_player name
