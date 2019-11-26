@@ -21,6 +21,8 @@ class SlackController < ApplicationController
            end
 
     render json: { text: text, username: 'MatchBot' }
+  rescue => e # rubocop:disable Style/RescueStandardError
+    render json: { text: "ERROR: #{e.message}", username: 'MatchBot' }
   end
 
   private
@@ -31,7 +33,7 @@ class SlackController < ApplicationController
     end
 
     body = params.require(:text)
-    split = body.split(' ')
+    split = body.gsub(/[[:space:]]/, ' ').strip.split(' ')
     emoji = split.first.gsub(':', '')
 
     command = split.second
