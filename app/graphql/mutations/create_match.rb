@@ -4,7 +4,7 @@ class Mutations::CreateMatch < Mutations::Base::Mutation
   class MatchResult < Types::Base::InputObject
     argument :players, [ID], required: true
     argument :score, Float, required: false
-    argument :position, Integer, required: false
+    argument :place, Integer, required: false
   end
 
   argument :gameId, ID, required: true
