@@ -9,16 +9,37 @@ class Mutations::CreateMatch < Mutations::Base::Mutation
 
   argument :gameId, ID, required: true
   argument :results, [MatchResult], required: true
+  argument :postResultToSlack, Boolean, required: false, default_value: false
 
   field :match, Types::Match, null: true
   field :errors, [String], null: true
 
-  def resolve(game_id:, results:)
+  def resolve(game_id:, results:, post_result_to_slack:)
     match = Commands::CreateMatch.run(
       game_id: game_id,
       results: results.map(&:to_h),
     )
 
+    post_to_slack(match: match) if post_result_to_slack == true
+
     { match: match }
+  end
+
+  private
+
+  def post_to_slack(match:)
+    text = match.generate_text_response
+
+    webhook_url = case match.game.name
+                  when 'Super Smash Bros'
+                    ENV['SMASH_OUTGOING_SLACK_HOOK']
+                  end
+
+    return unless webhook_url.present?
+
+    Commands::PostToSlack.run(
+      webhook_url: webhook_url,
+      message: text,
+    )
   end
 end
