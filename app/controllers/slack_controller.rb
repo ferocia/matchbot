@@ -82,7 +82,7 @@ class SlackController < ApplicationController
 
     match = Commands::CreateMatch.run(game_id: game.id, results: results)
 
-    generate_response_for_match(match)
+    match.generate_text_response
   end
 
   # result looks like 'Name+Name:Score'
@@ -100,56 +100,6 @@ class SlackController < ApplicationController
       end
 
     { score: score, players: players }
-  end
-
-  def generate_response_for_match(match)
-    <<~RES
-      *Match Result for #{match.game.name}*
-
-      ```
-      #{
-        match.results.order(place: :asc).map do |r, _i|
-          s = "#{r.place.ordinalize}: #{r.team.players.map(&:name).join(' + ')}"
-          if r.score.present?
-            "#{s} scored #{r.score}"
-          else
-            s
-          end
-        end.join("\n")
-      }
-      ```
-
-      *Player Stats*:
-
-      ```
-      #{
-        match.players.map { |p| generate_player_text(match, p) }.join("\n")
-      }
-      ```
-    RES
-  end
-
-  def generate_player_text(match, player)
-    current, previous =
-      player.rating_events.joins(:match).where(
-        matches: { game_id: match.game_id },
-      )
-        .order(created_at: :desc)
-        .limit(2)
-    return "#{player.name}: #{current.mean.round(4)}" if previous.nil?
-
-    delta = (current.mean - previous.mean).round(4)
-
-    delta_text =
-      if delta == 0
-        '-'
-      elsif delta > 0
-        "+#{delta}"
-      else
-        delta
-      end
-
-    "#{player.name}: #{current.mean.round(4)} (#{delta_text})"
   end
 
   def generate_help_text

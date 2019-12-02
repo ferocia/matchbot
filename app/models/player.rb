@@ -13,4 +13,28 @@ class Player < ApplicationRecord
   def rating_for_game(game:)
     ratings.find_by(game: game)
   end
+
+  def generate_text_response_for(match:)
+    current, previous =
+      rating_events.joins(:match).where(matches: { game_id: match.game_id })
+        .order(created_at: :desc)
+        .limit(2)
+
+    delta = if previous.present?
+              (current.mean - previous.mean)
+            else
+              (current.mean - match.game.default_mean)
+            end.round(4)
+
+    delta_text =
+      if delta == 0
+        '-'
+      elsif delta > 0
+        "+#{delta}"
+      else
+        delta
+      end
+
+    "#{name}: #{current.mean.round(4)} (#{delta_text})"
+  end
 end

@@ -67,4 +67,29 @@ class Match < ApplicationRecord
       destroy
     end
   end
+
+  def generate_text_response
+    <<~RES
+      *Match Result for #{game.name}*
+
+      ```
+      #{
+        results.order(place: :asc).map do |r, _i|
+          s = "#{r.place.ordinalize}: #{r.team.players.map(&:name).join(' + ')}"
+          if r.score.present?
+            "#{s} scored #{r.score}"
+          else
+            s
+          end
+        end.join("\n")
+      }
+      ```
+
+      *Player Stats*:
+
+      ```
+      #{players.map { |p| p.generate_text_response_for(match: self) }.join("\n")}
+      ```
+    RES
+  end
 end
