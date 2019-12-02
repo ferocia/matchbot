@@ -31,6 +31,8 @@ gem 'rack-cors'
 
 gem 'terminal-table'
 
+gem 'httparty'
+
 group :development, :test do
   gem 'awesome_print'
   gem 'byebug'
