@@ -132,19 +132,21 @@ class SlackController < ApplicationController
   end
 
   def handle_leaderboard
-    headings = %w[Player Mean Played]
+    headings = %w[Rank Player Mean Played]
 
     rows = game.ratings
       .includes(:player)
       .includes(:rating_events)
       .order(mean: :desc)
-      .map do |rating|
+      .each_with_index
+      .map do |rating, i|
         played = rating.rating_events
           .where('updated_at BETWEEN ? AND ?', 30.days.ago, Time.now)
           .count
 
         # If you add something here, make sure you update the headings as well
         [
+          i + 1,
           rating.player.name,
           rating.mean.round(4),
           { value: played, alignment: :right },
