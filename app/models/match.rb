@@ -16,7 +16,7 @@ class Match < ApplicationRecord
     ratings = []
     trueskills = []
 
-    results.each do |result|
+    results.order(place: :asc).each do |result|
       r = result.team.players.map { |p| p.rating_for_game(game: game) }
       t = result.team.players.map { |p| p.trueskill_for_game(game: game) }
 
