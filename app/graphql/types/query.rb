@@ -3,8 +3,8 @@
 class Types::Query < Types::Base::Object
   field :games, [Types::Game], null: false
   field :game, Types::Game, null: true do
-    argument :id, ID, required: false
-    argument :name, String, required: false
+    argument :id, ID, required: false, default_value: nil
+    argument :name, String, required: false, default_value: nil
   end
 
   field :players, [Types::Player], null: false
