@@ -10,6 +10,7 @@ class Types::Rating < Types::Base::Object
   field :game, Types::Game, null: false
 
   field :ratingEvents, [Types::RatingEvent], null: false
+  field :playCount, Int, null: false
 
   def player
     Loaders::Record.for(Player).load(object.player_id)
@@ -23,5 +24,9 @@ class Types::Rating < Types::Base::Object
     Loaders::Association.for(Rating, :rating_events).load(object).then do
       object.rating_events
     end
+  end
+
+  def play_count
+    rating_events.then(&:count)
   end
 end
