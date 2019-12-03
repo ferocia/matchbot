@@ -13,6 +13,7 @@ class Commands::CreateMatch
     results = results.map do |result|
       players = Player.find(result[:players])
       team = Team.find_or_create_by_players(players)
+      # TODO: manually add a place to all of these if it doesn't exist
       { team: team, score: result[:score], place: result[:place] }
     end
 
