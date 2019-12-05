@@ -6,6 +6,7 @@ class Types::RatingEvent < Types::Base::Object
   field :deviation, Float, null: false
   field :deltaMean, Float, null: true
   field :deltaDeviation, Float, null: true
+  field :createdAt, Float, null: false
 
   field :rating, Types::Rating, null: false
 
