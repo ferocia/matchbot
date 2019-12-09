@@ -21,20 +21,20 @@ class Player < ApplicationRecord
         .limit(2)
 
     delta = if previous.present?
-              (current.mean - previous.mean)
+              (current.public_mean - previous.public_mean)
             else
-              (current.mean - match.game.default_mean)
-            end.round(4)
+              (current.public_mean - (match.game.default_mean * 100))
+            end.to_i
 
     delta_text =
       if delta == 0
-        '-'
+        '--'
       elsif delta > 0
         "+#{delta}"
       else
         delta
       end
 
-    "#{name}: #{current.mean.round(4)} (#{delta_text})"
+    "#{name}: #{current.public_mean} (#{delta_text})"
   end
 end

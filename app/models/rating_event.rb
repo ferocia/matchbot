@@ -4,6 +4,10 @@ class RatingEvent < ApplicationRecord
   belongs_to :rating
   belongs_to :match
 
+  def public_mean
+    (mean * 100).floor
+  end
+
   def undo!
     ActiveRecord::Base.transaction do
       previous_event = rating.rating_events

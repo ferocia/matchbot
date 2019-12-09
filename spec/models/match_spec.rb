@@ -62,10 +62,10 @@ RSpec.describe Match, type: :model do
         *Player Stats*:
 
         ```
-        Player 1: 33.2067 (+8.2067)
-        Player 2: 27.4015 (+2.4015)
-        Player 3: 22.5985 (-2.4015)
-        Player 4: 16.7933 (-8.2067)
+        Player 1: 3320 (+820)
+        Player 2: 2740 (+240)
+        Player 3: 2259 (-241)
+        Player 4: 1679 (-821)
         ```
       RES
     end

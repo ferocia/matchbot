@@ -148,7 +148,7 @@ class SlackController < ApplicationController
         [
           i + 1,
           rating.player.name,
-          rating.mean.round(4),
+          rating.public_mean,
           { value: played, alignment: :right },
         ]
       end

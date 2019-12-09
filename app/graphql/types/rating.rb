@@ -12,6 +12,10 @@ class Types::Rating < Types::Base::Object
   field :ratingEvents, [Types::RatingEvent], null: false
   field :playCount, Int, null: false
 
+  def mean
+    object.public_mean
+  end
+
   def player
     Loaders::Record.for(Player).load(object.player_id)
   end
