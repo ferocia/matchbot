@@ -28,7 +28,18 @@ class Mutations::CreateMatch < Mutations::Base::Mutation
   private
 
   def post_to_slack(match:)
-    text = match.generate_text_response
+    match_response = match.generate_text_response
+    leaderboard = match.game.generate_text_leaderboard
+
+    text = <<~RES
+      #{match_response}
+
+      *Leaderboard*
+
+      ```
+      #{leaderboard}
+      ```
+    RES
 
     webhook_url = case match.game.name
                   when 'Super Smash Bros'
