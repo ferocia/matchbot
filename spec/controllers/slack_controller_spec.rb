@@ -3,6 +3,16 @@
 require 'rails_helper'
 
 RSpec.describe SlackController, type: :controller do
+  def post_with_token(params:)
+    ENV['SLACK_WEBHOOK_TOKEN'] = 'test-token' if ENV['SLACK_WEBHOOK_TOKEN'].nil?
+
+    post(
+      :webhook,
+      params: params.merge(token: ENV['SLACK_WEBHOOK_TOKEN']),
+      as: :json,
+    )
+  end
+
   describe 'slack posts' do
     let!(:game) { create(:game, name: 'Rocket League', emoji_name: 'rocket') }
     let!(:player_one) { create(:player, name: 'John') }
@@ -14,7 +24,7 @@ RSpec.describe SlackController, type: :controller do
       raw_emoji = Emoji.find_by_alias('rocket').raw
       command = "#{raw_emoji} result John+luke:10 matthew+Mark:15"
 
-      post :webhook, params: { text: command }, as: :json
+      post_with_token params: { text: command }
 
       parsed = JSON.parse(response.body)
 
@@ -24,7 +34,7 @@ RSpec.describe SlackController, type: :controller do
       expect(parsed['text']).to be_present
     end
 
-    context 'some players have played before' do
+    context 'entering a result' do
       before do
         game.ensure_ratings_created_for!([player_one, player_three])
 
@@ -36,18 +46,79 @@ RSpec.describe SlackController, type: :controller do
 
         m.calculate_ratings_for_players!
       end
-      it 'should show deltas if the players have played before' do
-        raw_emoji = Emoji.find_by_alias('rocket').raw
-        command = "#{raw_emoji} result John+luke:10 matthew+Mark:15"
 
-        post :webhook, params: { text: command }, as: :json
+      it 'should generate the correct output' do
+        command = ":#{game.emoji_name}: result John+luke:10 matthew+Mark:15"
+
+        post_with_token params: { text: command }
 
         parsed = JSON.parse(response.body)
 
-        ap parsed
-
         expect(parsed['username']).to eq('MatchBot')
-        expect(parsed['text']).to be_present
+        expect(parsed['text']).to eq <<~RES
+          *Match Result for Rocket League*
+
+          ```
+          1st: Matthew + Mark scored 15.0
+          2nd: John + Luke scored 10.0
+          ```
+
+          *Player Stats*:
+
+          ```
+          Matthew: 2853 (+353)
+          Mark: 2641 (+141)
+          John: 2358 (-142)
+          Luke: 2146 (-354)
+          ```
+        RES
+      end
+    end
+
+    context 'for the leaderboard command' do
+      before do
+        Commands::CreateMatch.run(
+          game_id: game.id,
+          results: [
+            { players: [player_one.id], place: 1 },
+            { players: [player_two.id], place: 2 },
+            { players: [player_three.id], place: 3 },
+            { players: [player_four.id], place: 4 },
+          ],
+        )
+
+        Commands::CreateMatch.run(
+          game_id: game.id,
+          results: [
+            { players: [player_one.id], place: 1 },
+            { players: [player_two.id], place: 2 },
+            { players: [player_three.id], place: 3 },
+            { players: [player_four.id], place: 4 },
+          ],
+        )
+      end
+
+      it 'generates a leaderboard' do
+        command = ":#{game.emoji_name}: leaderboard"
+        post_with_token params: { text: command }
+
+        expect(parsed['text']).to eq <<~RES
+          *Leaderboard for :rocket: Rocket League*
+
+          ```
+          +------+---------+------+--------+
+          | Rank | Player  | Mean | Played |
+          +------+---------+------+--------+
+          | 1    | John    | 3618 |      2 |
+          | 2    | Matthew | 2822 |      2 |
+          | 3    | Mark    | 2177 |      2 |
+          | 4    | Luke    | 1381 |      2 |
+          +------+---------+------+--------+
+          | Played count over last 30 days |
+          |       Mean over all time       |
+          +------+---------+------+--------+
+          ```
+        RES
       end
     end
   end

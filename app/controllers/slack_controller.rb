@@ -22,6 +22,8 @@ class SlackController < ApplicationController
 
     render json: { text: text, username: 'MatchBot' }
   rescue => e # rubocop:disable Style/RescueStandardError
+    raise e if Rails.env.test?
+
     render json: { text: "ERROR: #{e.message}", username: 'MatchBot' }
   end
 
@@ -46,7 +48,9 @@ class SlackController < ApplicationController
     body = parsed_body
     game = Game.find_by(emoji_name: body[:emoji])
 
-    raise StandardError, "Can't find game with emoji \`#{emoji}\`" unless game
+    unless game
+      raise StandardError, "Can't find game with emoji \`#{body[:emoji]}\`"
+    end
 
     game
   end
@@ -132,44 +136,7 @@ class SlackController < ApplicationController
   end
 
   def handle_leaderboard
-    headings = %w[Rank Player Mean Played]
-
-    rows = game.ratings
-      .includes(:player)
-      .includes(:rating_events)
-      .order(mean: :desc)
-      .each_with_index
-      .map do |rating, i|
-        played = rating.rating_events
-          .where('updated_at BETWEEN ? AND ?', 30.days.ago, Time.now)
-          .count
-
-        # If you add something here, make sure you update the headings as well
-        [
-          i + 1,
-          rating.player.name,
-          rating.public_mean,
-          { value: played, alignment: :right },
-        ]
-      end
-
-    # add the footer
-    rows << :separator
-    rows << [{
-      value: 'Played count over last 30 days',
-      alignment: :center,
-      colspan: headings.length,
-    }]
-    rows << [{
-      value: 'Mean over all time',
-      alignment: :center,
-      colspan: headings.length,
-    }]
-
-    table = Terminal::Table.new(
-      headings: headings,
-      rows: rows,
-    ).to_s
+    table = game.generate_text_leaderboard
 
     <<~TXT
       *Leaderboard for :#{game.emoji_name}: #{game.name}*

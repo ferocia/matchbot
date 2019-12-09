@@ -31,4 +31,45 @@ class Game < ApplicationRecord
       )
     end
   end
+
+  def generate_text_leaderboard
+    headings = %w[Rank Player Mean Played]
+
+    rows = ratings
+      .includes(:player)
+      .includes(:rating_events)
+      .order(mean: :desc)
+      .each_with_index
+      .map do |rating, i|
+        played = rating.rating_events
+          .where('updated_at BETWEEN ? AND ?', 30.days.ago, Time.now)
+          .count
+
+        # If you add something here, make sure you update the headings as well
+        [
+          i + 1,
+          rating.player.name,
+          rating.public_mean,
+          { value: played, alignment: :right },
+        ]
+      end
+
+    # add the footer
+    rows << :separator
+    rows << [{
+      value: 'Played count over last 30 days',
+      alignment: :center,
+      colspan: headings.length,
+    }]
+    rows << [{
+      value: 'Mean over all time',
+      alignment: :center,
+      colspan: headings.length,
+    }]
+
+    Terminal::Table.new(
+      headings: headings,
+      rows: rows,
+    ).to_s
+  end
 end
