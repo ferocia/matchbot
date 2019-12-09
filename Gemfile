@@ -39,7 +39,7 @@ group :development, :test do
   gem 'factory_bot_rails'
   gem 'pry-rails'
   gem 'rspec-rails'
-  gem 'sorbet'
+  gem 'webmock'
 end
 
 group :development do
