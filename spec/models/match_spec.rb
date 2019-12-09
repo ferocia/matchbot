@@ -45,5 +45,29 @@ RSpec.describe Match, type: :model do
       expect(rating_three).to eq(22)
       expect(rating_four).to eq(16)
     end
+
+    it 'generates a correct text response' do
+      # should show positions correctly, and output the player stats in the
+      # correct order
+      expect(match.generate_text_response).to eq <<~RES
+        *Match Result for Billiards*
+
+        ```
+        1st: Player 1
+        2nd: Player 2
+        3rd: Player 3
+        4th: Player 4
+        ```
+
+        *Player Stats*:
+
+        ```
+        Player 1: 33.2067 (+8.2067)
+        Player 2: 27.4015 (+2.4015)
+        Player 3: 22.5985 (-2.4015)
+        Player 4: 16.7933 (-8.2067)
+        ```
+      RES
+    end
   end
 end

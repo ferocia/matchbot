@@ -69,12 +69,14 @@ class Match < ApplicationRecord
   end
 
   def generate_text_response
+    ordered_results = results.order(place: :asc)
+
     <<~RES
       *Match Result for #{game.name}*
 
       ```
       #{
-        results.order(place: :asc).map do |r, _i|
+        ordered_results.map do |r, _i|
           s = "#{r.place.ordinalize}: #{r.team.players.map(&:name).join(' + ')}"
           if r.score.present?
             "#{s} scored #{r.score}"
@@ -88,7 +90,13 @@ class Match < ApplicationRecord
       *Player Stats*:
 
       ```
-      #{players.map { |p| p.generate_text_response_for(match: self) }.join("\n")}
+      #{
+        ordered_results
+          .map { |r| r.team.players }
+          .flatten
+          .map { |p| p.generate_text_response_for(match: self) }
+          .join("\n")
+      }
       ```
     RES
   end
