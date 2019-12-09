@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe SlackController, type: :controller do
   describe 'slack posts' do
-    let!(:game) { create(:game, name: 'Rocket League', emoji: 'rocket') }
+    let!(:game) { create(:game, name: 'Rocket League', emoji_name: 'rocket') }
     let!(:player_one) { create(:player, name: 'John') }
     let!(:player_two) { create(:player, name: 'Matthew') }
     let!(:player_three) { create(:player, name: 'Mark') }

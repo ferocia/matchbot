@@ -53,19 +53,19 @@ RSpec.describe Match, type: :model do
         *Match Result for Billiards*
 
         ```
-        1st: Player 1
-        2nd: Player 2
-        3rd: Player 3
-        4th: Player 4
+        1st: #{player_one.name}
+        2nd: #{player_two.name}
+        3rd: #{player_three.name}
+        4th: #{player_four.name}
         ```
 
         *Player Stats*:
 
         ```
-        Player 1: 3320 (+820)
-        Player 2: 2740 (+240)
-        Player 3: 2259 (-241)
-        Player 4: 1679 (-821)
+        #{player_one.name}: 3320 (+820)
+        #{player_two.name}: 2740 (+240)
+        #{player_three.name}: 2259 (-241)
+        #{player_four.name}: 1679 (-821)
         ```
       RES
     end
