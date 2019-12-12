@@ -15,14 +15,23 @@ class RatingEvent < ApplicationRecord
         .order(updated_at: :desc)
         .first
 
-      if previous_event.nil?
-        raise StandardError, "Can't undo because no previous event"
+      after = rating.rating_events.where('updated_at > ?', updated_at).count
+      if after > 0
+        raise StandardError, "Can't undo because there are matches after this"
       end
 
-      rating.update!(
-        mean: previous_event.mean,
-        deviation: previous_event.deviation,
-      )
+      if previous_event.nil?
+        game = match.game
+        rating.update!(
+          mean: game.default_mean,
+          deviation: game.default_deviation,
+        )
+      else
+        rating.update!(
+          mean: previous_event.mean,
+          deviation: previous_event.deviation,
+        )
+      end
 
       # remove this rating
       destroy
