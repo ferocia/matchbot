@@ -2,6 +2,7 @@
 
 game = Game.create!(
   name: 'Billiards',
+  emoji_name: '8ball',
   default_mean: 25,
   default_deviation: 25.0 / 3,
 )
@@ -10,18 +11,28 @@ p1 = Player.create!(name: 'David')
 p2 = Player.create!(name: 'Tyson')
 p3 = Player.create!(name: 'Ev')
 p4 = Player.create!(name: 'Anson')
+p5 = Player.create!(name: 'Gally')
 
-t1 = Team.create!(players: [p1, p2])
-t2 = Team.create!(players: [p3, p4])
+def create_result(first, second)
+  [{
+    players: [first.id],
+    place: 1,
+  }, {
+    players: [second.id],
+    place: 2,
+  }]
+end
 
-m1 = Match.create!(game: game, teams: [t1, t2])
-m1.results.create!(team: t1, score: 10)
-m1.results.create!(team: t2, score: 0)
+Commands::CreateMatch.run(game_id: game.id, results: create_result(p1, p2))
+Commands::CreateMatch.run(game_id: game.id, results: create_result(p1, p3))
+Commands::CreateMatch.run(game_id: game.id, results: create_result(p1, p4))
+Commands::CreateMatch.run(game_id: game.id, results: create_result(p1, p5))
 
-m2 = Match.create!(game: game, teams: [t1, t2])
-m2.results.create!(team: t1, score: 0)
-m2.results.create!(team: t2, score: 10)
+Commands::CreateMatch.run(game_id: game.id, results: create_result(p2, p3))
+Commands::CreateMatch.run(game_id: game.id, results: create_result(p2, p4))
+Commands::CreateMatch.run(game_id: game.id, results: create_result(p2, p5))
 
-m3 = Match.create!(game: game, teams: [t1, t2])
-m3.results.create!(team: t1, score: 40)
-m3.results.create!(team: t2, score: 0)
+Commands::CreateMatch.run(game_id: game.id, results: create_result(p3, p4))
+Commands::CreateMatch.run(game_id: game.id, results: create_result(p3, p5))
+
+Commands::CreateMatch.run(game_id: game.id, results: create_result(p4, p5))
