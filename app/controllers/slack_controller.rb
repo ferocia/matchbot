@@ -1,8 +1,12 @@
 # frozen_string_literal: true
 
 class SlackController < ApplicationController
+  ALLOWED_CHANNELS = %w[billiards smash-bros rocket-league].freeze
+
   def webhook
     body = parsed_body
+
+    return unless ALLOWED_CHANNELS.include?(body[:channel])
 
     text = case body[:command]
            when 'result'
@@ -41,7 +45,12 @@ class SlackController < ApplicationController
     command = split.second
     args = split[2..]
 
-    { emoji: emoji, command: command, args: args }
+    {
+      channel: params.require(:channel_name),
+      emoji: emoji,
+      command: command,
+      args: args,
+    }
   end
 
   def game
