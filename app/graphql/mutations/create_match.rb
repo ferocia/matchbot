@@ -28,6 +28,15 @@ class Mutations::CreateMatch < Mutations::Base::Mutation
   private
 
   def post_to_slack(match:)
+    webhook_url = case match.game.name
+                  when 'Super Smash Bros'
+                    ENV['SMASH_OUTGOING_SLACK_HOOK']
+                  when '9 Ball', '8 Ball'
+                    ENV['BILLIARDS_OUTGOING_SLACK_HOOK']
+                  end
+
+    return unless webhook_url.present?
+
     match_response = match.generate_text_response
     leaderboard = match.game.generate_text_leaderboard
 
@@ -40,13 +49,6 @@ class Mutations::CreateMatch < Mutations::Base::Mutation
       #{leaderboard}
       ```
     RES
-
-    webhook_url = case match.game.name
-                  when 'Super Smash Bros'
-                    ENV['SMASH_OUTGOING_SLACK_HOOK']
-                  end
-
-    return unless webhook_url.present?
 
     Commands::PostToSlack.run(
       webhook_url: webhook_url,
