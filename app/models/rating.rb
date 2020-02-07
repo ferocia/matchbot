@@ -5,6 +5,10 @@ class Rating < ApplicationRecord
   belongs_to :game
   has_many :rating_events, dependent: :destroy
 
+  scope :recent, (lambda do
+    where('updated_at BETWEEN ? AND ?', 30.days.ago, Time.now)
+  end)
+
   def public_mean
     (mean * 100).floor
   end

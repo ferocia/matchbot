@@ -37,8 +37,10 @@ class Game < ApplicationRecord
     headings = %w[Rank Player Mean Played]
 
     rows = ratings
+      .recent
       .includes(:player)
       .includes(:rating_events)
+      .where('ratings.updated_at BETWEEN ? and ?', 30.days.ago, Time.now)
       .order(mean: :desc)
       .each_with_index
       .map do |rating, i|

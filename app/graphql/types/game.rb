@@ -11,7 +11,7 @@ class Types::Game < Types::Base::Object
   field :matches, [Types::Match], null: false
 
   def leaderboard
-    object.ratings.order(mean: :desc)
+    object.ratings.recent.order(mean: :desc)
   end
 
   def matches
