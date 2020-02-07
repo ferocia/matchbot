@@ -8,7 +8,10 @@ RSpec.describe SlackController, type: :controller do
 
     post(
       :webhook,
-      params: params.merge(token: ENV['SLACK_WEBHOOK_TOKEN']),
+      params: params.merge(
+        token: ENV['SLACK_WEBHOOK_TOKEN'],
+        channel_name: 'rocket-league',
+      ),
       as: :json,
     )
   end
@@ -21,8 +24,7 @@ RSpec.describe SlackController, type: :controller do
     let!(:player_four) { create(:player, name: 'Luke') }
 
     it 'should process valid slack commands' do
-      raw_emoji = Emoji.find_by_alias('rocket').raw
-      command = "#{raw_emoji} result John+luke:10 matthew+Mark:15"
+      command = ':rocket: result John+luke:10 matthew+Mark:15'
 
       post_with_token params: { text: command }
 
@@ -101,6 +103,8 @@ RSpec.describe SlackController, type: :controller do
       it 'generates a leaderboard' do
         command = ":#{game.emoji_name}: leaderboard"
         post_with_token params: { text: command }
+
+        parsed = JSON.parse(response.body)
 
         expect(parsed['text']).to eq <<~RES
           *Leaderboard for :rocket: Rocket League*
