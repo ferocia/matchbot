@@ -56,6 +56,9 @@ class Game < ApplicationRecord
           { value: played, alignment: :right },
         ]
       end
+      .select { |row| row[3][:value] > 0 }
+    # ^ hacky way to hide people who were entered incorrectly
+    # should probably solve this in the future
 
     # add the footer
     rows << :separator
