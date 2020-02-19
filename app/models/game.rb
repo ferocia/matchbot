@@ -42,21 +42,23 @@ class Game < ApplicationRecord
       .includes(:rating_events)
       .where('ratings.updated_at BETWEEN ? and ?', 30.days.ago, Time.now)
       .order(mean: :desc)
-      .each_with_index
-      .map do |rating, i|
-        played = rating.rating_events
-          .where('updated_at BETWEEN ? AND ?', 30.days.ago, Time.now)
-          .count
+    rows = rows.map do |rating|
+      played = rating.rating_events
+        .where('updated_at BETWEEN ? AND ?', 30.days.ago, Time.now)
+        .count
 
-        # If you add something here, make sure you update the headings as well
-        [
-          i + 1,
-          rating.player.name,
-          rating.public_mean,
-          { value: played, alignment: :right },
-        ]
-      end
-      .select { |row| row[3][:value] > 0 }
+      # If you add something here, make sure you update the headings as well
+      [
+        rating.player.name,
+        rating.public_mean,
+        { value: played, alignment: :right },
+      ]
+    end
+
+    rows = rows
+      .select { |row| row[2][:value] > 0 }
+      .each_with_index
+      .map { |array, i| [i + 1, *array] }
     # ^ hacky way to hide people who were entered incorrectly
     # should probably solve this in the future
 
