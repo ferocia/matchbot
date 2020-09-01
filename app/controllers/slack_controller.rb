@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class SlackController < ApplicationController
-  ALLOWED_CHANNELS = %w[billiards smash-bros rocket-league].freeze
+  ALLOWED_CHANNELS = %w[billiards gaming-smash-bros gaming-rocket-league].freeze
 
   def webhook
     body = parsed_body
