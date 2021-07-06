@@ -116,7 +116,9 @@ GEM
     mime-types (3.3)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2019.1009)
-    mimemagic (0.3.3)
+    mimemagic (0.3.10)
+      nokogiri (~> 1)
+      rake
     mini_mime (1.0.2)
     mini_portile2 (2.4.0)
     minitest (5.12.2)
@@ -205,7 +207,7 @@ GEM
     safe_yaml (1.0.5)
     sorbet-rails (0.5.8)
       parlour (~> 0.8.0)
-    sorbet-runtime (0.4.4878)
+    sorbet-runtime (0.5.6482)
     spring (2.1.0)
     spring-watcher-listen (2.0.1)
       listen (>= 2.7, < 4.0)
@@ -270,7 +272,7 @@ DEPENDENCIES
   webmock
 
 RUBY VERSION
-   ruby 2.6.5p114
+   ruby 2.7.3p183
 
 BUNDLED WITH
-   2.0.2
+   2.2.21
