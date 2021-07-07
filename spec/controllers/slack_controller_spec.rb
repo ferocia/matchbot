@@ -10,7 +10,7 @@ RSpec.describe SlackController, type: :controller do
       :webhook,
       params: params.merge(
         token: ENV['SLACK_WEBHOOK_TOKEN'],
-        channel_name: 'rocket-league',
+        channel_name: 'gaming-rocket-league',
       ),
       as: :json,
     )
@@ -69,8 +69,8 @@ RSpec.describe SlackController, type: :controller do
 
           ```
           Matthew: 2853 (+353)
-          Mark: 2641 (+141)
-          John: 2358 (-142)
+          Mark: 2641 (+142)
+          John: 2358 (-141)
           Luke: 2146 (-354)
           ```
         RES
