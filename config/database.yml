@@ -80,6 +80,4 @@ test:
 #
 production:
   <<: *default
-  database: matchbot_production
-  username: matchbot
-  password: <%= ENV['MATCHBOT_DATABASE_PASSWORD'] %>
+  url: <%= ENV['DATABASE_URL'] %>
