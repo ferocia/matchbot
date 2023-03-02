@@ -16,6 +16,4 @@ RUN bundle install
 
 COPY . .
 
-RUN bundle exec rails db:migrate
-
 CMD ["bundle", "exec", "rails", "s", "-b", "0.0.0.0", "-p", "3000"]
