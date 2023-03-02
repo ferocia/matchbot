@@ -2,6 +2,8 @@
 
 FROM ruby:3.2
 
+ENV RAILS_ENV=production
+
 RUN apt-get update -qq && apt-get install -y postgresql-client
 
 WORKDIR /app
