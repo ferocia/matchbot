@@ -14,3 +14,7 @@ end
 Emoji.create('kart') do |c|
   c.image_filename = 'https://emoji.slack-edge.com/T024P5CCV/kart/0ae70064c246aef8.jpg'
 end
+
+Emoji.create('towerfall') do |c|
+  c.image_filename = 'https://emoji.slack-edge.com/T024P5CCV/towerfall/6dbff25586e59594.png'
+end

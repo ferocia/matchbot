@@ -4,6 +4,8 @@ FROM ruby:3.2
 
 ENV RAILS_ENV=production
 
+EXPOSE 3000
+
 RUN apt-get update -qq && apt-get install -y postgresql-client
 
 WORKDIR /app
@@ -14,6 +16,6 @@ RUN bundle install
 
 COPY . .
 
-EXPOSE 3000
+RUN bundle exec db:migrate
 
 CMD ["bundle", "exec", "rails", "s", "-b", "0.0.0.0", "-p", "3000"]
