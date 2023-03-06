@@ -6,6 +6,9 @@ class Game < ApplicationRecord
   has_many :results, through: :matches
   has_many :ratings
 
+  attribute :default_mean, :integer, default: 25
+  attribute :default_deviation, :float, default: 25.0 / 3
+
   def self.find_by_emoji(emoji)
     parsed = Emoji.find_by_unicode(emoji)
     raise ArgumentError, "Couldn't find emoji for #{emoji}" unless parsed
