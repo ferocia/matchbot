@@ -4,13 +4,13 @@ class Types::Rating < Types::Base::Object
   field :id, ID, null: false
   field :mean, Float, null: false
   field :deviation, Float, null: false
-  field :updatedAt, Float, null: false
+  field :updated_at, Float, null: false
 
   field :player, Types::Player, null: false
   field :game, Types::Game, null: false
 
-  field :ratingEvents, [Types::RatingEvent], null: false
-  field :playCount, Int, null: false
+  field :rating_events, [Types::RatingEvent], null: false
+  field :play_count, Int, null: false
 
   def mean
     object.public_mean

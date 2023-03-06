@@ -2,10 +2,10 @@
 
 class Types::Match < Types::Base::Object
   field :id, ID, null: false
-  field :createdAt, Float, null: false
+  field :created_at, Float, null: false
   field :game, Types::Game, null: false
 
-  field :ratingEvents, [Types::RatingEvent], null: false
+  field :rating_events, [Types::RatingEvent], null: false
   field :results, [Types::Result], null: false
 
   def game
