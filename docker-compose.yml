@@ -1,0 +1,9 @@
+services:
+  web:
+    build: ./web
+    depends_on:
+      - api
+  api:
+    build: ./api
+    volumes:
+      - ./logs:/app/log
