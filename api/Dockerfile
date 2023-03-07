@@ -4,7 +4,7 @@ FROM ruby:3.2
 
 ENV RAILS_ENV=production
 
-EXPOSE 3000
+EXPOSE 80
 
 RUN apt-get update -qq && apt-get install -y postgresql-client
 
@@ -16,4 +16,4 @@ RUN bundle install
 
 COPY . .
 
-CMD ["bundle", "exec", "rails", "s", "-b", "0.0.0.0", "-p", "3000"]
+CMD ["bundle", "exec", "rails", "s", "-b", "0.0.0.0", "-p", "80"]

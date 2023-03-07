@@ -5,7 +5,7 @@ class Types::Player < Types::Base::Object
   field :name, String, null: false
   field :ratings, [Types::Rating], null: false
   field :rating, Types::Rating, null: true do
-    argument :gameId, ID, required: true
+    argument :game_id, ID, required: true
   end
 
   def ratings

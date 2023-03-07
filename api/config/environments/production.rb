@@ -75,6 +75,9 @@ Rails.application.configure do
   # require "syslog/logger"
   # config.logger = ActiveSupport::TaggedLogging.new(Syslog::Logger.new "app-name")
 
+  console_logger = ActiveSupport::Logger.new(STDOUT)
+  config.logger.extend(ActiveSupport::Logger.broadcast(console_logger))
+
   if ENV["RAILS_LOG_TO_STDOUT"].present?
     logger           = ActiveSupport::Logger.new(STDOUT)
     logger.formatter = config.log_formatter

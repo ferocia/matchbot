@@ -7,9 +7,9 @@ class Mutations::CreateMatch < Mutations::Base::Mutation
     argument :place, Integer, required: false
   end
 
-  argument :gameId, ID, required: true
+  argument :game_id, ID, required: true
   argument :results, [MatchResult], required: true
-  argument :postResultToSlack, Boolean, required: false, default_value: false
+  argument :post_result_to_slack, Boolean, required: false, default_value: false
 
   field :match, Types::Match, null: true
   field :errors, [String], null: true

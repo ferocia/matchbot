@@ -4,9 +4,9 @@ class Types::RatingEvent < Types::Base::Object
   field :id, ID, null: false
   field :mean, Float, null: false
   field :deviation, Float, null: false
-  field :deltaMean, Float, null: true
-  field :deltaDeviation, Float, null: true
-  field :createdAt, Float, null: false
+  field :delta_mean, Float, null: true
+  field :delta_deviation, Float, null: true
+  field :created_at, Float, null: false
   field :match, Types::Match, null: false
 
   field :rating, Types::Rating, null: false
