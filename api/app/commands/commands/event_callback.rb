@@ -9,7 +9,7 @@ class Commands::EventCallback
 
   def initialize(event)
     @event = event
-    @text = event[:text].gsub(/[[:space:]]/, ' ').strip.split(' ')
+    @text = event[:text].gsub(/[[:space:]]/, ' ').strip
   end
 
   def run
