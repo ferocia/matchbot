@@ -125,18 +125,20 @@ class Commands::ProcessSlackTextCommand
     post_to_slack(text:)
   end
 
-  def handle_leaderboard
+  def generate_leaderboard
     table = game.generate_text_leaderboard
 
-    text = <<~TXT
+    <<~TXT
       *Leaderboard for :#{game.emoji_name}: #{game.name}*
 
       ```
       #{table}
       ```
     TXT
+  end
 
-    post_to_slack(text:)
+  def handle_leaderboard
+    post_to_slack(text: generate_leaderboard)
   end
 
   def handle_undo
@@ -144,12 +146,10 @@ class Commands::ProcessSlackTextCommand
 
     match.undo!
 
-    leaderboard = handle_leaderboard
-
     text = <<~TXT
       Last match undone. Current leaderboard:
 
-      #{leaderboard}
+      #{generate_leaderboard}
     TXT
 
     post_to_slack(text:)
