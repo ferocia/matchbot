@@ -6,5 +6,6 @@ FactoryBot.define do
     default_mean { 25 }
     default_deviation { 25.0 / 3 }
     emoji_name { '8ball' }
+    slack_channel_id { 'C12345678' }
   end
 end
