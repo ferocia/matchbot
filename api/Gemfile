@@ -29,6 +29,8 @@ gem 'terminal-table'
 
 gem 'httparty'
 
+gem 'dotenv-rails'
+
 group :development, :test do
   gem 'awesome_print'
   gem 'byebug'

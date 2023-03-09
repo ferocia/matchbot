@@ -6,7 +6,8 @@ class Commands::CreateMatch
   #   players: [Player.id],
   #   score: ?Float,
   #   place: ?Integer
-  # }]
+  # }],
+  # post_to_slack: Boolean
   def self.run(game_id:, results:)
     game = Game.find(game_id)
 
