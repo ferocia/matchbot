@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+source "$(dirname "${BASH_SOURCE[0]}")/lib/postgres.bash"
+
+ensure_asdf_installed() {
+  asdf install
+}
+
+start_overmind() {
+  overmind s
+}
+
+ensure_asdf_installed
+postgres.ensure_correct_version_running
+start_overmind

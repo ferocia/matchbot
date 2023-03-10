@@ -6,40 +6,14 @@
 
 From the root of the project:
 
-```
-asdf install
-```
-
-Ensure your database is running:
-
-```
-pg_ctl start
-```
-
-### Setup API
-
-From the root of the project:
-
-```
-cd api
-bundle
-
-bundle exec rails db:setup
-```
-
-### Setup Web
-
-From the root of the project:
-
-```
-cd web
-yarn
+```sh
+./script/bootstrap
 ```
 
 ### Running the server
 
 From the root of the project:
 
-```
-overmind s
+```sh
+./script/start
 ```

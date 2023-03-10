@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+source "$(dirname "${BASH_SOURCE[0]}")/lib/postgres.bash"
+
+asdf install
+
+postgres.ensure_correct_version_running
+
+pushd api || { echo "couldn't find api/" && exit 1; }
+
+bundle
+bundle exec rails db:setup
+
+popd || exit
+
+pushd web || { echo "couldn't find web/"; exit 1; }
+
+yarn
+
+popd || exit
