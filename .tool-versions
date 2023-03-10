@@ -1,2 +1,3 @@
 ruby 3.2.1
-node 16.15.1
+nodejs 16.15.1
+postgres 14.5
