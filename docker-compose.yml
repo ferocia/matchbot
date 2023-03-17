@@ -5,5 +5,3 @@ services:
       - api
   api:
     build: ./api
-    volumes:
-      - ./logs:/app/log
