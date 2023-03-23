@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { parse, stringify } from 'query-string';
+import qs from 'query-string';
 
 export default function useQueryState(key, defaultValue) {
-  const initialValue = parse(window.location.search)[key] || defaultValue;
+  const initialValue = qs.parse(window.location.search)[key] || defaultValue;
   const [v, set] = useState(initialValue);
 
   const setter = (value) => {
@@ -10,12 +10,12 @@ export default function useQueryState(key, defaultValue) {
       return;
     }
 
-    const parsed = parse(window.location.search);
+    const parsed = qs.parse(window.location.search);
     parsed[key] = value;
     window.history.pushState(
       {},
       'MatchBot',
-      `?${stringify(parsed)}${window.location.hash}`,
+      `?${qs.stringify(parsed)}${window.location.hash}`,
     );
 
     set(value);

@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import {createRoot} from 'react-dom/client';
 import { ApolloProvider } from '@apollo/react-hooks';
 import apollo from './apollo';
 import MatchEntry from './MatchEntry';
@@ -46,5 +46,5 @@ function App() {
   );
 }
 
-const rootElement = document.getElementById('root');
-ReactDOM.render(<App />, rootElement);
+const root = createRoot(document.getElementById('root'));
+root.render(<App />);
