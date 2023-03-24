@@ -3,7 +3,12 @@ import { Dropdown } from "semantic-ui-react";
 import { gql } from "@apollo/client";
 
 export default function GamePicker({ loading, data, value, onChange }) {
+  if (data == null) {
+    return null;
+  }
+
   const { games } = data;
+
   return (
     <Dropdown
       loading={loading}
