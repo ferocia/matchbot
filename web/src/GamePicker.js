@@ -1,10 +1,9 @@
 import React from 'react';
 import { Dropdown } from 'semantic-ui-react';
-import { filter } from 'graphql-anywhere';
-import { gql } from 'apollo-boost';
+import { gql } from '@apollo/client';
 
 export default function GamePicker({ loading, data, value, onChange }) {
-  const { games } = filter(GamePicker.fragments.query, data || { games: [] });
+  const { games } = data;
   return (
     <Dropdown
       loading={loading}

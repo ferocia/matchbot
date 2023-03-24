@@ -1,6 +1,6 @@
 import React from 'react';
 import {createRoot} from 'react-dom/client';
-import { ApolloProvider } from '@apollo/react-hooks';
+import { ApolloProvider } from '@apollo/client';
 import apollo from './apollo';
 import MatchEntry from './MatchEntry';
 import Leaderboard from './Leaderboard';

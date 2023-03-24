@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { gql } from 'apollo-boost';
-import { useQuery, useLazyQuery } from '@apollo/react-hooks';
+import { gql, useQuery, useLazyQuery } from '@apollo/client';
 import { Header, Dropdown } from 'semantic-ui-react';
 import {
   LineChart,

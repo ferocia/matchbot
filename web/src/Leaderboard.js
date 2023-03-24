@@ -1,6 +1,5 @@
 import React from 'react';
-import { gql } from 'apollo-boost';
-import { useQuery } from '@apollo/react-hooks';
+import { gql, useQuery } from '@apollo/client';
 import { Header, Table, Dimmer, Loader } from 'semantic-ui-react';
 import useQueryState from './lib/useQueryState';
 import GamePicker from './GamePicker';
