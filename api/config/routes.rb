@@ -5,4 +5,6 @@ Rails.application.routes.draw do
 
   post 'slack/event', to: 'slack#event'
   post 'slack/slash', to: 'slack#slash'
+
+  get 'health', to: 'health#check'
 end
