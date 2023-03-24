@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { gql, useQuery, useMutation } from '@apollo/client';
+import React, { useState } from "react";
+import { gql, useQuery, useMutation } from "@apollo/client";
 import {
   Header,
   Button,
@@ -7,9 +7,9 @@ import {
   Dimmer,
   Loader,
   Checkbox,
-} from 'semantic-ui-react';
-import useQueryState from './lib/useQueryState';
-import GamePicker from './GamePicker';
+} from "semantic-ui-react";
+import useQueryState from "./lib/useQueryState";
+import GamePicker from "./GamePicker";
 
 const QUERY = gql`
   query MatchEntry {
@@ -52,7 +52,7 @@ export default function MatchEntry() {
         data: {
           createPlayer: { player },
         },
-      },
+      }
     ) => {
       cache.writeQuery({
         query: QUERY,
@@ -65,7 +65,7 @@ export default function MatchEntry() {
   });
 
   const [submitResult] = useMutation(SUBMIT_RESULT);
-  const [gameId, setGameId] = useQueryState('gameId', null);
+  const [gameId, setGameId] = useQueryState("gameId", null);
   const [results, setResults] = useState([]);
   const [invertResultEntry, setInvertResultEntry] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -85,7 +85,7 @@ export default function MatchEntry() {
   if (!data) {
     return (
       <p>
-        For some reason, there was no data returned{' '}
+        For some reason, there was no data returned{" "}
         <span role="img" aria-label="man shrugging">
           🤷‍♂️
         </span>
@@ -110,7 +110,7 @@ export default function MatchEntry() {
   const handlePlayerAdd = () => {
     const name = prompt("Enter the new player's name");
 
-    if (name !== null && name !== '') {
+    if (name !== null && name !== "") {
       addPlayer({ variables: { name } });
     }
   };
@@ -137,8 +137,8 @@ export default function MatchEntry() {
     <div
       style={{
         padding: 5,
-        display: 'flex',
-        flexDirection: 'column',
+        display: "flex",
+        flexDirection: "column",
       }}
     >
       <Header as="h1">Match Entry</Header>
@@ -149,10 +149,10 @@ export default function MatchEntry() {
         onChange={setGameId}
       />
 
-      <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-        {data.players
+      <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
+        {[...data.players]
           .sort(({ name: first }, { name: second }) =>
-            first.localeCompare(second),
+            first.localeCompare(second)
           )
           .map(({ name, id }) => (
             <Button
@@ -176,10 +176,10 @@ export default function MatchEntry() {
 
       <div
         style={{
-          width: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          position: 'absolute',
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          position: "absolute",
           bottom: 0,
         }}
       >

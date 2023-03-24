@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { gql, useQuery, useLazyQuery } from '@apollo/client';
-import { Header, Dropdown } from 'semantic-ui-react';
+import React, { useState, useEffect } from "react";
+import { gql, useQuery, useLazyQuery } from "@apollo/client";
+import { Header, Dropdown } from "semantic-ui-react";
 import {
   LineChart,
   Line,
@@ -8,9 +8,9 @@ import {
   XAxis,
   YAxis,
   ResponsiveContainer,
-} from 'recharts';
-import useQueryState from './lib/useQueryState';
-import GamePicker from './GamePicker';
+} from "recharts";
+import useQueryState from "./lib/useQueryState";
+import GamePicker from "./GamePicker";
 
 const PLAYER_DATA_QUERY = gql`
   query PlayerData($id: ID!, $gameId: ID!) {
@@ -38,7 +38,7 @@ const PICKER_QUERY = gql`
 `;
 
 export default function PlayerStats() {
-  const [gameId, setGameId] = useQueryState('gameId', null);
+  const [gameId, setGameId] = useQueryState("gameId", null);
   const [playerId, setPlayerId] = useState(null);
   const picker = useQuery(PICKER_QUERY);
   const [getPlayerData, playerData] = useLazyQuery(PLAYER_DATA_QUERY);
@@ -64,7 +64,7 @@ export default function PlayerStats() {
           ({ mean, createdAt }) => ({
             name: new Date(createdAt * 1000).toLocaleString(),
             value: mean,
-          }),
+          })
         )
       : null;
 
@@ -74,8 +74,8 @@ export default function PlayerStats() {
     <div
       style={{
         padding: 5,
-        display: 'flex',
-        flexDirection: 'column',
+        display: "flex",
+        flexDirection: "column",
       }}
     >
       <Header as="h1">Player Stats {name ? `for ${name}` : null}</Header>

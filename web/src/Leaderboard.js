@@ -1,8 +1,8 @@
-import React from 'react';
-import { gql, useQuery } from '@apollo/client';
-import { Header, Table, Dimmer, Loader } from 'semantic-ui-react';
-import useQueryState from './lib/useQueryState';
-import GamePicker from './GamePicker';
+import React from "react";
+import { gql, useQuery } from "@apollo/client";
+import { Header, Table, Dimmer, Loader } from "semantic-ui-react";
+import useQueryState from "./lib/useQueryState";
+import GamePicker from "./GamePicker";
 
 const PICKER_QUERY = gql`
   query LeaderboardPicker {
@@ -33,7 +33,7 @@ const roundToFour = (num) => {
 };
 
 export default function Leaderboard() {
-  const [gameId, setGameId] = useQueryState('gameId', null);
+  const [gameId, setGameId] = useQueryState("gameId", null);
   const picker = useQuery(PICKER_QUERY);
   const leaderboard = useQuery(LEADERBOARD_QUERY, { variables: { gameId } });
 
@@ -51,8 +51,8 @@ export default function Leaderboard() {
     <div
       style={{
         padding: 5,
-        display: 'flex',
-        flexDirection: 'column',
+        display: "flex",
+        flexDirection: "column",
       }}
     >
       <Header as="h1">Leaderboard</Header>

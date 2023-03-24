@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import qs from 'query-string';
+import { useState } from "react";
+import qs from "query-string";
 
 export default function useQueryState(key, defaultValue) {
   const initialValue = qs.parse(window.location.search)[key] || defaultValue;
@@ -14,8 +14,8 @@ export default function useQueryState(key, defaultValue) {
     parsed[key] = value;
     window.history.pushState(
       {},
-      'MatchBot',
-      `?${qs.stringify(parsed)}${window.location.hash}`,
+      "MatchBot",
+      `?${qs.stringify(parsed)}${window.location.hash}`
     );
 
     set(value);

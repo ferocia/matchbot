@@ -1,6 +1,6 @@
-import React from 'react';
-import { Dropdown } from 'semantic-ui-react';
-import { gql } from '@apollo/client';
+import React from "react";
+import { Dropdown } from "semantic-ui-react";
+import { gql } from "@apollo/client";
 
 export default function GamePicker({ loading, data, value, onChange }) {
   const { games } = data;
@@ -14,11 +14,11 @@ export default function GamePicker({ loading, data, value, onChange }) {
       options={games.map((g) => ({
         key: g.id,
         text: (
-          <span style={{ display: 'flex' }}>
+          <span style={{ display: "flex" }}>
             {g.emoji.raw || (
               <img
                 alt={g.emoji.name}
-                style={{ width: '1rem', marginRight: '6px' }}
+                style={{ width: "1rem", marginRight: "6px" }}
                 src={g.emoji.url}
               />
             )}
