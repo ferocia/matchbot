@@ -1,6 +1,6 @@
 # syntax = docker/dockerfile:experimental
 
-FROM ruby:3.2
+FROM ruby:3.2.2-alpine
 
 ENV RAILS_ENV=production
 
@@ -9,7 +9,7 @@ EXPOSE 80
 HEALTHCHECK --interval=5m --timeout=3s \
   CMD curl -f http://localhost/ || exit 1
 
-RUN apt-get update -qq && apt-get install -y postgresql-client
+RUN apk add build-base postgresql14-client postgresql14-dev git
 
 WORKDIR /app
 
@@ -19,4 +19,4 @@ RUN bundle install
 
 COPY . .
 
-CMD ["./docker-entrypoint.sh"]
+CMD ["/bin/sh", "./docker-entrypoint.sh"]
