@@ -9,7 +9,7 @@ EXPOSE 80
 HEALTHCHECK --interval=5m --timeout=3s \
   CMD curl -f http://localhost/ || exit 1
 
-RUN apk add build-base postgresql14-client postgresql14-dev git
+RUN apk add build-base tzdata libc6-compat postgresql14-client postgresql14-dev git
 
 WORKDIR /app
 
