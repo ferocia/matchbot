@@ -26,7 +26,8 @@ class Commands::SlackSlash
         game = Game.create!(name:, emoji_name:, slack_channel_id:, **emoji_details)
 
         { response_type: 'in_channel', text: "Success! :#{emoji_name}: #{name} created!" }
-      rescue
+      rescue => e
+        puts e
         { response_type: 'ephemeral', text: "Couldn't create ':#{emoji_name}: #{name}' - maybe it already exists?" }
       end
     when 'help'
