@@ -156,7 +156,8 @@ class Commands::ProcessSlackTextCommand
   end
 
   def handle_players_show
-    names = Player.all.map(&:name).join("\n")
+    names = Player.all.map(&:name).sort.join("\n")
+    unicode_emoji = Emoji.find_by_alias(emoji).raw
 
     text = <<~TXT
       Available Players:
@@ -164,7 +165,7 @@ class Commands::ProcessSlackTextCommand
       #{names}
 
       -----------------
-      Add a new player with `:#{emoji}: add <name>`
+      Add a new player with `:#{unicode_emoji}: add <name>`
     TXT
 
     post_to_slack(text:)
