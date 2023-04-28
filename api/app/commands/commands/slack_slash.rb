@@ -57,7 +57,7 @@ class Commands::SlackSlash
 
     custom = custom_emoji[emoji]
 
-    return nil if custom.nil?
+    return {} if custom.nil?
 
     if custom.start_with?("alias:")
       actual = custom.gsub(/^alias:/, '')
