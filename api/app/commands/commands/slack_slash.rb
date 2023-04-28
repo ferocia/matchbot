@@ -29,7 +29,15 @@ class Commands::SlackSlash
       begin
         game = Game.create!(name:, emoji_name:, slack_channel_id:, **emoji_details)
 
-        { response_type: 'in_channel', text: "Success! :#{emoji_name}: #{name} created!" }
+        response = [
+          "Success! :#{emoji_name}: #{name} created!",
+        ]
+
+        unless bot_is_channel_member?
+          response.push("MatchBot is not a member of this channel, and commands won't work until you add it. Type `@Matchbot` in this channel to add.")
+        end
+
+        { response_type: 'in_channel', text: response.join("\n\n")}
       rescue => e
         puts e
         { response_type: 'ephemeral', text: "Couldn't create ':#{emoji_name}: #{name}' - maybe it already exists?" }
@@ -83,5 +91,16 @@ class Commands::SlackSlash
         nil
       end
     end
+  end
+
+  def bot_is_channel_member?
+    headers = { 'Content-Type' => "application/json", 'Authorization' => "Bearer #{ENV["SLACK_TOKEN"]}" }
+    body = {
+      channel: slack_channel_id,
+      limit: 1,
+    }.to_json
+    result = HTTParty.post('https://slack.com/api/emoji.list?', headers:, body:)
+
+    result[:ok] # if the response returns false, the bot isn't a member
   end
 end
