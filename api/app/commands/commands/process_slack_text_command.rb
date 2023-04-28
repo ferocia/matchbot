@@ -57,7 +57,7 @@ class Commands::ProcessSlackTextCommand
         - show a list of all available players
       undo
         - revert the previous result entry
-      new_player name
+      add name
         - add a new player to the system.
         - new player isavailable for all games on matchbot
         - player names must be unique and are case insensitive
@@ -156,9 +156,6 @@ class Commands::ProcessSlackTextCommand
   end
 
   def handle_players_show
-    body = parsed_body
-    emoji = body[:emoji]
-
     names = Player.all.map(&:name).join("\n")
 
     text = <<~TXT
@@ -174,8 +171,7 @@ class Commands::ProcessSlackTextCommand
   end
 
   def handle_players_add
-    body = parsed_body
-    name = body[:args].first
+    name = args.first
 
     player = Player.create!(name: name)
 
