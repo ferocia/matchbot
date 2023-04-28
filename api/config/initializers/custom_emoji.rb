@@ -18,3 +18,9 @@ end
 Emoji.create('towerfall') do |c|
   c.image_filename = 'https://emoji.slack-edge.com/T024P5CCV/towerfall/6dbff25586e59594.png'
 end
+
+emoji = Emoji.find_by_alias("ping_pong")
+
+Emoji.edit_emoji(emoji) do |char|
+  char.add_alias("table_tennis_paddle_and_ball")
+end

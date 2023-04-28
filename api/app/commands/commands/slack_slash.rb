@@ -22,6 +22,10 @@ class Commands::SlackSlash
       puts "Emoji: #{emoji_name}"
       puts "Name: #{name}"
 
+      if emoji_details.nil?
+        return { response_type: 'ephemeral', text: "Sorry, :#{emoji_name}: doesn't seem to be a custom Slack emoji, but also can't be found in Gemoji. There might be a different alias. This must be fixed manually."}
+      end
+
       begin
         game = Game.create!(name:, emoji_name:, slack_channel_id:, **emoji_details)
 
@@ -57,7 +61,7 @@ class Commands::SlackSlash
 
     custom = custom_emoji[emoji]
 
-    return {} if custom.nil?
+    return nil if custom.nil?
 
     if custom.start_with?("alias:")
       actual = custom.gsub(/^alias:/, '')

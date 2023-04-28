@@ -20,9 +20,18 @@ class Commands::EventCallback
 
     return if emoji_name.nil?
 
-    @game = Game.find_by(slack_channel_id: event[:channel], emoji_name:)
+    @game = Game.find_by(emoji_name:, slack_channel_id: event[:channel])
 
     puts @game
+
+    if game.nil?
+      Command::PostToSlack.run(
+        channel_id: event[:channel],
+        text: "Couldn't find a game for emoji ':#{emoji_name}:' (#{emoji_name})",
+        blocks: nil,
+      )
+      return
+    end
 
     return if game.nil?
 
