@@ -1,23 +1,25 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useReducer } from "react";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import {
   Box,
   Button,
   Container,
-  Switch,
-  Select,
   Heading,
-  Stack,
   Flex,
-  Skeleton,
   Spacer,
   HStack,
 } from "@chakra-ui/react";
 import GamePicker from "../GamePicker";
-import ScrollButton from "./components/ScrollButton";
+import { initialState, gameReducer } from "./gameReducer";
+import {
+  GameModeSwitch,
+  ScoreSelector,
+  PlayerSelector,
+  LoadingPlaceholder,
+} from "./components";
 
 const QUERY = gql`
-  query MatchEntry {
+  query Players {
     players {
       id
       name
@@ -49,23 +51,8 @@ const SUBMIT_RESULT = gql`
 `;
 
 export default function TableTennis() {
-  const gameState = {
-    team1: {
-      isDouble: false,
-      players: [],
-      score: null,
-    },
-    team2: {
-      isDouble: false,
-      players: [],
-      score: null,
-    },
-    maxScore: 11,
-  };
-
   const { loading, error, data } = useQuery(QUERY);
-  const team1ScoreRef = useRef();
-  const team2ScoreRef = useRef();
+  const [state, dispatch] = useReducer(gameReducer, initialState);
   const [addPlayer] = useMutation(ADD_PLAYER, {
     update: (
       cache,
@@ -88,23 +75,9 @@ export default function TableTennis() {
   const [submitResult] = useMutation(SUBMIT_RESULT);
   const [results, setResults] = useState([]);
   const [submitting, setSubmitting] = useState(false);
-
+  console.log(state);
   if (loading) {
-    return (
-      <Stack
-        style={{
-          padding: 5,
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <Skeleton height="20px" />
-        <Skeleton height="20px" />
-        <Skeleton height="20px" />
-        <Skeleton height="20px" />
-        <Skeleton height="20px" />
-      </Stack>
-    );
+    return <LoadingPlaceholder />;
   }
 
   if (error) {
@@ -150,23 +123,12 @@ export default function TableTennis() {
       });
   };
 
-  const handleScroll = (scroll, containerRef) => {
-    const { current: container } = containerRef;
-    const newScrollLeft = container.scrollLeft + scroll;
-
-    container.scrollTo({ left: newScrollLeft });
-  };
-
   return (
     <Container maxWidth="container.md">
       <Heading pt="15">Table Tennis</Heading>
 
       <Flex>
-        <Box py="4">
-          Single&nbsp;
-          <Switch size="lg" id="game-mode" />
-          &nbsp;Double
-        </Box>
+        <GameModeSwitch isDouble={state.isDouble} dispatch={dispatch} />
         <Spacer />
         <Box py="4">
           <Button colorScheme="blue" variant="outline" mt="-2">
@@ -179,201 +141,57 @@ export default function TableTennis() {
         Team 1
       </Heading>
       <HStack spacing="24px" justify="center">
-        <Select placeholder="Select player" maxWidth="md">
-          {[...data.players]
-            .sort(({ name: first }, { name: second }) =>
-              first.localeCompare(second)
-            )
-            .map(({ name, id }) => (
-              <option key={id} value={id}>
-                {name}
-              </option>
-            ))}
-        </Select>
-
-        <Select placeholder="Select player" maxWidth="md">
-          {[...data.players]
-            .sort(({ name: first }, { name: second }) =>
-              first.localeCompare(second)
-            )
-            .map(({ name, id }) => (
-              <option key={id} value={id}>
-                {name}
-              </option>
-            ))}
-        </Select>
+        <PlayerSelector
+          teamKey="team1"
+          playerKey="player1"
+          state={state}
+          dispatch={dispatch}
+          players={data.players}
+        />
+        {state.isDouble && (
+          <PlayerSelector
+            teamKey="team1"
+            playerKey="player2"
+            state={state}
+            dispatch={dispatch}
+            players={data.players}
+          />
+        )}
       </HStack>
 
-      <HStack py="5" minW="100%" position="relative">
-        <Stack
-          position="absolute"
-          top={0}
-          bottom={0}
-          left={0}
-          justifyContent="center"
-        >
-          <ScrollButton
-            buttonLocation="left"
-            scroll={handleScroll}
-            containerRef={team1ScoreRef}
-          />
-        </Stack>
-
-        <HStack
-          ref={team1ScoreRef}
-          scrollBehavior="smooth"
-          overflowX="hidden"
-          spacing={4}
-          minW="100%"
-        >
-          <Button variant="outline">0</Button>
-          <Button variant="outline">1</Button>
-          <Button variant="outline">2</Button>
-          <Button variant="outline">3</Button>
-          <Button variant="outline">4</Button>
-          <Button variant="outline">5</Button>
-          <Button variant="outline">6</Button>
-          <Button variant="outline">7</Button>
-          <Button variant="outline">8</Button>
-          <Button variant="outline">9</Button>
-          <Button variant="outline">10</Button>
-          <Button variant="outline">11</Button>
-          <Button variant="outline">12</Button>
-          <Button variant="outline">13</Button>
-          <Button variant="outline">14</Button>
-          <Button variant="outline">15</Button>
-          <Button variant="outline">16</Button>
-          <Button variant="outline">17</Button>
-          <Button variant="outline">18</Button>
-          <Button variant="outline">19</Button>
-          <Button variant="outline">20</Button>
-          <Button variant="outline">21</Button>
-          <Button variant="outline">22</Button>
-          <Button variant="outline">23</Button>
-          <Button variant="outline">24</Button>
-          <Button variant="outline">25</Button>
-          <Button variant="outline">26</Button>
-          <Button variant="outline">27</Button>
-          <Button variant="outline">28</Button>
-          <Button variant="outline">29</Button>
-          <Button variant="outline">30</Button>
-          <Button variant="outline">31</Button>
-        </HStack>
-
-        <Stack
-          position="absolute"
-          top={0}
-          bottom={0}
-          right={0}
-          justifyContent="center"
-        >
-          <ScrollButton
-            buttonLocation="right"
-            scroll={handleScroll}
-            containerRef={team1ScoreRef}
-          />
-        </Stack>
-      </HStack>
+      <ScoreSelector
+        score={state.team1.score}
+        teamKey="team1"
+        dispatch={dispatch}
+      />
 
       <Heading as="h2" size="lg">
         Team 2
       </Heading>
       <HStack spacing="24px" justify="center">
-        <Select placeholder="Select player" maxWidth="md">
-          {[...data.players]
-            .sort(({ name: first }, { name: second }) =>
-              first.localeCompare(second)
-            )
-            .map(({ name, id }) => (
-              <option key={id} value={id}>
-                {name}
-              </option>
-            ))}
-        </Select>
-
-        {/* <Select placeholder="Select player" maxWidth="md">
-          {[...data.players]
-            .sort(({ name: first }, { name: second }) =>
-              first.localeCompare(second)
-            )
-            .map(({ name, id }) => (
-              <option key={id} value={id}>
-                {name}
-              </option>
-            ))}
-        </Select> */}
+        <PlayerSelector
+          teamKey="team2"
+          playerKey="player1"
+          state={state}
+          dispatch={dispatch}
+          players={data.players}
+        />
+        {state.isDouble && (
+          <PlayerSelector
+            teamKey="team2"
+            playerKey="player2"
+            state={state}
+            dispatch={dispatch}
+            players={data.players}
+          />
+        )}
       </HStack>
 
-      <HStack py="5" minW="100%" position="relative">
-        <Stack
-          position="absolute"
-          top={0}
-          bottom={0}
-          left={0}
-          justifyContent="center"
-        >
-          <ScrollButton
-            buttonLocation="left"
-            scroll={handleScroll}
-            containerRef={team2ScoreRef}
-          />
-        </Stack>
-
-        <HStack
-          ref={team2ScoreRef}
-          scrollBehavior="smooth"
-          overflowX="hidden"
-          spacing={4}
-          minW="100%"
-        >
-          <Button variant="outline">0</Button>
-          <Button variant="outline">1</Button>
-          <Button variant="outline">2</Button>
-          <Button variant="outline">3</Button>
-          <Button variant="outline">4</Button>
-          <Button variant="outline">5</Button>
-          <Button variant="outline">6</Button>
-          <Button variant="outline">7</Button>
-          <Button variant="outline">8</Button>
-          <Button variant="outline">9</Button>
-          <Button variant="outline">10</Button>
-          <Button variant="outline">11</Button>
-          <Button variant="outline">12</Button>
-          <Button variant="outline">13</Button>
-          <Button variant="outline">14</Button>
-          <Button variant="outline">15</Button>
-          <Button variant="outline">16</Button>
-          <Button variant="outline">17</Button>
-          <Button variant="outline">18</Button>
-          <Button variant="outline">19</Button>
-          <Button variant="outline">20</Button>
-          <Button variant="outline">21</Button>
-          <Button variant="outline">22</Button>
-          <Button variant="outline">23</Button>
-          <Button variant="outline">24</Button>
-          <Button variant="outline">25</Button>
-          <Button variant="outline">26</Button>
-          <Button variant="outline">27</Button>
-          <Button variant="outline">28</Button>
-          <Button variant="outline">29</Button>
-          <Button variant="outline">30</Button>
-          <Button variant="outline">31</Button>
-        </HStack>
-
-        <Stack
-          position="absolute"
-          top={0}
-          bottom={0}
-          right={0}
-          justifyContent="center"
-        >
-          <ScrollButton
-            buttonLocation="right"
-            scroll={handleScroll}
-            containerRef={team2ScoreRef}
-          />
-        </Stack>
-      </HStack>
+      <ScoreSelector
+        score={state.team2.score}
+        teamKey="team2"
+        dispatch={dispatch}
+      />
 
       <Flex>
         <Button
