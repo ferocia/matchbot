@@ -6,6 +6,11 @@
   "main": "src/index.js",
   "dependencies": {
     "@apollo/client": "^3.7.10",
+    "@chakra-ui/icons": "^2.0.19",
+    "@chakra-ui/react": "^2.7.1",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "framer-motion": "^10.12.16",
     "graphql": "16.6.0",
     "lodash.groupby": "4.6.0",
     "query-string": "8.1.0",
