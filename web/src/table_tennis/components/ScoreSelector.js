@@ -57,16 +57,19 @@ const ScoreSelector = ({ teamKey }) => {
         borderColor="gray.200"
         p={3}
       >
-        {[...Array(32).keys()].map((index) => (
-          <Button
-            isActive={state[teamKey].score === index}
-            key={index}
-            value={index}
-            onClick={handleClick}
-          >
-            {index}
-          </Button>
-        ))}
+        {[...Array(32).keys()].map((index) => {
+          const isActive = state[teamKey].score === index;
+          return (
+            <Button
+              colorScheme={isActive ? "green" : "gray"}
+              key={index}
+              value={index}
+              onClick={handleClick}
+            >
+              {index}
+            </Button>
+          );
+        })}
       </HStack>
 
       {showScrollButtons && (
