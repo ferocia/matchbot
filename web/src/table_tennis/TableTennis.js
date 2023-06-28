@@ -8,6 +8,7 @@ import {
   Flex,
   Spacer,
   HStack,
+  useToast,
 } from "@chakra-ui/react";
 import GamePicker from "../GamePicker";
 import { initialState, gameReducer } from "./gameReducer";
@@ -45,12 +46,14 @@ const SUBMIT_RESULT = gql`
     createMatch(gameId: $gameId, results: $results, postResultToSlack: true) {
       match {
         id
+        text
       }
     }
   }
 `;
 
 export default function TableTennis() {
+  const toast = useToast();
   const { loading, error, data } = useQuery(QUERY);
   const [state, dispatch] = useReducer(gameReducer, initialState);
   const [addPlayer] = useMutation(ADD_PLAYER, {
@@ -124,13 +127,28 @@ export default function TableTennis() {
     ];
 
     submitResult({ variables: { gameId: game.id, results: toSubmit } })
-      .then(() => {
+      .then((response) => {
         setSubmitting(false);
         dispatch({ type: "game_submitted" });
+        toast({
+          title: "Result submitted.",
+          description: response.data.createMatch.match.text,
+          status: "success",
+          duration: 10000,
+          isClosable: true,
+          position: "top",
+        });
       })
       .catch((e) => {
         setSubmitting(false);
-        alert(e.message);
+        toast({
+          title: "Submit failed.",
+          description: e.message,
+          status: "error",
+          duration: 10000,
+          isClosable: true,
+          position: "top",
+        });
       });
   };
 
