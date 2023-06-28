@@ -18,6 +18,7 @@ import {
   PlayerSelector,
   LoadingPlaceholder,
 } from "./components";
+import { isValidState } from "./helper";
 
 const QUERY = gql`
   query Players {
@@ -37,6 +38,7 @@ const ADD_PLAYER = gql`
         id
         name
       }
+      errors
     }
   }
 `;
@@ -61,10 +63,22 @@ export default function TableTennis() {
       cache,
       {
         data: {
-          createPlayer: { player },
+          createPlayer: { player, errors },
         },
       }
     ) => {
+      if (player === null) {
+        toast.closeAll();
+        toast({
+          title: "Failed!",
+          description: errors[0],
+          status: "error",
+          duration: 4000,
+          isClosable: true,
+          position: "top",
+        });
+        return false;
+      }
       cache.writeQuery({
         query: QUERY,
         data: {
@@ -77,7 +91,7 @@ export default function TableTennis() {
 
   const [submitResult] = useMutation(SUBMIT_RESULT);
   const [submitting, setSubmitting] = useState(false);
-  console.log(state);
+
   if (loading) {
     return <LoadingPlaceholder />;
   }
@@ -108,6 +122,19 @@ export default function TableTennis() {
   };
 
   const handleResultSubmission = () => {
+    if (!isValidState(state)) {
+      toast.closeAll();
+      toast({
+        title: "Invalid input",
+        description: "Please enter players and valid score result.",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+        position: "top",
+      });
+      return false;
+    }
+
     setSubmitting(true);
     const toSubmit = [
       {
@@ -126,6 +153,7 @@ export default function TableTennis() {
       .then((response) => {
         setSubmitting(false);
         dispatch({ type: "game_submitted" });
+        toast.closeAll();
         toast({
           title: "Result submitted.",
           description: response.data.createMatch.match.text,
@@ -137,6 +165,7 @@ export default function TableTennis() {
       })
       .catch((e) => {
         setSubmitting(false);
+        toast.closeAll();
         toast({
           title: "Submit failed.",
           description: e.message,
