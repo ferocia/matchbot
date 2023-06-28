@@ -7,7 +7,7 @@ import MatchEntry from "./MatchEntry";
 import Leaderboard from "./Leaderboard";
 import PlayerStats from "./PlayerStats";
 import NewPlayerStats from "./NewPlayerStats";
-import TableTennis from "./table_tennis/TableTennis";
+import TableTennis from "./table_tennis";
 
 import "./styles.css";
 import { Tab } from "semantic-ui-react";
@@ -24,7 +24,7 @@ const tabs = [
   { menuItem: "Leaderboard", render: () => <Leaderboard /> },
   { menuItem: "Player Stats", render: () => <PlayerStats /> },
   { menuItem: "Player Stats (Experimental)", render: () => <NewPlayerStats /> },
-  { menuItem: "🏓 Table Tennis", render: () => <TableTennis /> },
+  { menuItem: "Table Tennis", render: () => <TableTennis /> },
 ];
 
 const tabSlugs = tabs.map((t) => slugify(t.menuItem));

@@ -1,8 +1,12 @@
 import { useRef } from "react";
 import { Button, HStack, Stack, useBreakpointValue } from "@chakra-ui/react";
 import ScrollButton from "./ScrollButton";
+import { useGameDispatch, useGameState } from "../GameContext";
 
-const ScoreSelector = ({ score, dispatch, teamKey }) => {
+const ScoreSelector = ({ teamKey }) => {
+  const dispatch = useGameDispatch();
+  const state = useGameState();
+
   const ref = useRef();
   const handleClick = (event) => {
     dispatch({
@@ -55,7 +59,7 @@ const ScoreSelector = ({ score, dispatch, teamKey }) => {
       >
         {[...Array(32).keys()].map((index) => (
           <Button
-            isActive={score === index}
+            isActive={state[teamKey].score === index}
             key={index}
             value={index}
             onClick={handleClick}
