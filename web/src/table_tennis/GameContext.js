@@ -1,4 +1,28 @@
+import { createContext, useReducer, useContext } from "react";
 import { getOpponentScore } from "./helper";
+
+const GameContext = createContext(null);
+const GameDispatchContext = createContext(null);
+
+export function ContextProvider({ children }) {
+  const [state, dispatch] = useReducer(gameReducer, initialState);
+
+  return (
+    <GameContext.Provider value={state}>
+      <GameDispatchContext.Provider value={dispatch}>
+        {children}
+      </GameDispatchContext.Provider>
+    </GameContext.Provider>
+  );
+}
+
+export function useGameState() {
+  return useContext(GameContext);
+}
+
+export function useGameDispatch() {
+  return useContext(GameDispatchContext);
+}
 
 export const initialState = {
   isDouble: false,

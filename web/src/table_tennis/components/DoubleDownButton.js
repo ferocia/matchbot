@@ -1,6 +1,9 @@
 import { Box, Button } from "@chakra-ui/react";
+import { useGameDispatch } from "../GameContext";
 
-const DoubleDownButton = ({ dispatch }) => {
+const DoubleDownButton = () => {
+  const dispatch = useGameDispatch();
+
   const handleDoubleDown = () => {
     dispatch({ type: "double_down" });
   };

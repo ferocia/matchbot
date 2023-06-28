@@ -1,6 +1,10 @@
 import { Select } from "@chakra-ui/react";
+import { useGameDispatch, useGameState } from "../GameContext";
 
-const PlayerSelector = ({ teamKey, playerKey, state, dispatch, players }) => {
+const PlayerSelector = ({ teamKey, playerKey, players }) => {
+  const dispatch = useGameDispatch();
+  const state = useGameState();
+
   const handleSelect = (event) => {
     dispatch({
       type: "player_selected",
