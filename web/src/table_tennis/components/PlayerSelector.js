@@ -15,7 +15,7 @@ const PlayerSelector = ({ teamKey, playerKey, state, dispatch, players }) => {
     state.isDouble && state.team1.player2,
     state.team2.player1,
     state.isDouble && state.team2.player2,
-  ].filter((id) => id);
+  ].filter(Boolean);
 
   return (
     <Select

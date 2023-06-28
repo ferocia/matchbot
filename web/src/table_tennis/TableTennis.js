@@ -73,7 +73,6 @@ export default function TableTennis() {
   });
 
   const [submitResult] = useMutation(SUBMIT_RESULT);
-  const [results, setResults] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   console.log(state);
   if (loading) {
@@ -105,17 +104,29 @@ export default function TableTennis() {
     }
   };
 
+  const handleDoubleDown = () => {
+    dispatch({ type: "double_down" });
+  };
+
   const handleResultSubmission = () => {
     setSubmitting(true);
-    const toSubmit = results.map((playerId, i) => ({
-      players: [playerId],
-      place: i + 1,
-    }));
+    const toSubmit = [
+      {
+        players: [state.team1.player1, state.team1.player2].filter(Boolean),
+        score: state.team1.score,
+        place: state.team1.score > state.team2.score ? 1 : 2,
+      },
+      {
+        players: [state.team2.player1, state.team2.player2].filter(Boolean),
+        score: state.team2.score,
+        place: state.team2.score > state.team1.score ? 1 : 2,
+      },
+    ];
 
     submitResult({ variables: { gameId: game.id, results: toSubmit } })
       .then(() => {
         setSubmitting(false);
-        setResults([]);
+        dispatch({ type: "game_submitted" });
       })
       .catch((e) => {
         setSubmitting(false);
@@ -130,11 +141,18 @@ export default function TableTennis() {
       <Flex>
         <GameModeSwitch isDouble={state.isDouble} dispatch={dispatch} />
         <Spacer />
-        <Box py="4">
-          <Button colorScheme="blue" variant="outline" mt="-2">
-            Double down
-          </Button>
-        </Box>
+        {state.previousGame.team1.player1 && (
+          <Box py="4">
+            <Button
+              colorScheme="blue"
+              variant="outline"
+              mt="-2"
+              onClick={handleDoubleDown}
+            >
+              Double down
+            </Button>
+          </Box>
+        )}
       </Flex>
 
       <Heading as="h2" size="lg">
@@ -203,7 +221,12 @@ export default function TableTennis() {
           Add player
         </Button>
         <Spacer />
-        <Button onClick={handleResultSubmission} colorScheme="green" mt="15">
+        <Button
+          onClick={handleResultSubmission}
+          colorScheme="green"
+          mt="15"
+          isDisabled={submitting}
+        >
           Submit
         </Button>
       </Flex>
