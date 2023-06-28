@@ -4,9 +4,14 @@ class Types::Match < Types::Base::Object
   field :id, ID, null: false
   field :created_at, Float, null: false
   field :game, Types::Game, null: false
+  field :text, String, null: false
 
   field :rating_events, [Types::RatingEvent], null: false
   field :results, [Types::Result], null: false
+
+  def text
+    object.generate_web_response
+  end
 
   def game
     Loaders::Record.for(Game).load(object.game_id)

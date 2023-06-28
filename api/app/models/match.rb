@@ -100,4 +100,22 @@ class Match < ApplicationRecord
       ```
     RES
   end
+
+  def generate_web_response
+    ordered_results = results.order(place: :asc)
+
+    <<~RES
+      Match Result for #{game.name}:
+      #{
+        ordered_results.map do |r, _i|
+          s = "#{r.place.ordinalize}: #{r.team.players.map(&:name).join(' + ')}"
+          if r.score.present?
+            "#{s} scored #{r.score}"
+          else
+            s
+          end
+        end.join(", ")
+      }
+    RES
+  end
 end
