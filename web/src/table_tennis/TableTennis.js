@@ -13,6 +13,7 @@ import {
 import GamePicker from "../GamePicker";
 import { initialState, gameReducer } from "./gameReducer";
 import {
+  DoubleDownButton,
   GameModeSwitch,
   ScoreSelector,
   PlayerSelector,
@@ -107,10 +108,6 @@ export default function TableTennis() {
     }
   };
 
-  const handleDoubleDown = () => {
-    dispatch({ type: "double_down" });
-  };
-
   const handleResultSubmission = () => {
     setSubmitting(true);
     const toSubmit = [
@@ -160,16 +157,7 @@ export default function TableTennis() {
         <GameModeSwitch isDouble={state.isDouble} dispatch={dispatch} />
         <Spacer />
         {state.previousGame.team1.player1 && (
-          <Box py="4">
-            <Button
-              colorScheme="blue"
-              variant="outline"
-              mt="-2"
-              onClick={handleDoubleDown}
-            >
-              Double down
-            </Button>
-          </Box>
+          <DoubleDownButton dispatch={dispatch} />
         )}
       </Flex>
 
