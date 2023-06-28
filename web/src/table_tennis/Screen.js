@@ -9,6 +9,7 @@ import {
   LoadingPlaceholder,
   SubmitButton,
   AddPlayerButton,
+  TeamHeader,
 } from "./components";
 import { useGameState } from "./GameContext";
 
@@ -57,10 +58,7 @@ const Screen = () => {
         <Spacer />
         {state.previousGame.team1.player1 && <DoubleDownButton />}
       </Flex>
-
-      <Heading as="h2" size="lg">
-        Team 1
-      </Heading>
+      <TeamHeader teamKey={"team1"} />
       <HStack spacing="24px" justify="center">
         <PlayerSelector
           teamKey="team1"
@@ -77,9 +75,7 @@ const Screen = () => {
       </HStack>
       <ScoreSelector teamKey="team1" />
 
-      <Heading as="h2" size="lg">
-        Team 2
-      </Heading>
+      <TeamHeader teamKey={"team2"} />
       <HStack spacing="24px" justify="center">
         <PlayerSelector
           teamKey="team2"

@@ -5,3 +5,4 @@ export { default as LoadingPlaceholder } from "./LoadingPlaceholder";
 export { default as DoubleDownButton } from "./DoubleDownButton";
 export { default as SubmitButton } from "./SubmitButton";
 export { default as AddPlayerButton } from "./AddPlayerButton";
+export { default as TeamHeader } from "./TeamHeader";
