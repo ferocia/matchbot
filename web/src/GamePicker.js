@@ -20,7 +20,7 @@ export default function GamePicker({ loading, data, value, onChange }) {
         key: g.id,
         text: (
           <span style={{ display: "flex" }}>
-            {g.emoji.raw || (
+            {g.emoji.raw ? g.emoji.raw + " " : (
               <img
                 alt={g.emoji.name}
                 style={{ width: "1rem", marginRight: "6px" }}

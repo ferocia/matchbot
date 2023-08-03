@@ -1,5 +1,12 @@
 # frozen_string_literal: true
 
+smash = Game.create!(
+  name: 'Super Smash Bros',
+  emoji_name: 'smash',
+  default_mean: 25,
+  default_deviation: 25.0 / 3,
+)
+
 eight_ball = Game.create!(
   name: 'Billiards',
   emoji_name: '8ball',
