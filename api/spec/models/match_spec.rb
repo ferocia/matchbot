@@ -53,19 +53,10 @@ RSpec.describe Match, type: :model do
         *Match Result for Billiards*
 
         ```
-        1st: abby
-        2nd: barry
-        3rd: celeste
-        4th: don
-        ```
-
-        *Player Stats*:
-
-        ```
-        abby: 3320 (+820)
-        barry: 2740 (+240)
-        celeste: 2259 (-241)
-        don: 1679 (-821)
+        1st: abby    | 3320 (+820)
+        2nd: barry   | 2740 (+240)
+        3rd: celeste | 2259 (-241)
+        4th: don     | 1679 (-821)
         ```
       RES
     end
@@ -128,19 +119,10 @@ RSpec.describe Match, type: :model do
         *Match Result for Billiards*
 
         ```
-        1st: abby scored 0.0
-        2nd: barry scored 1.0
-        3rd: celeste scored 2.0
-        4th: don scored 3.0
-        ```
-
-        *Player Stats*:
-
-        ```
-        abby: 3320 (+820)
-        barry: 2740 (+240)
-        celeste: 2259 (-241)
-        don: 1679 (-821)
+        1st: abby scored 0.0    | 3320 (+820)
+        2nd: barry scored 1.0   | 2740 (+240)
+        3rd: celeste scored 2.0 | 2259 (-241)
+        4th: don scored 3.0     | 1679 (-821)
         ```
       RES
     end

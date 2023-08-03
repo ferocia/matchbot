@@ -70,35 +70,60 @@ class Match < ApplicationRecord
 
   def generate_text_response
     ordered_results = results.order(place: :asc)
+    team_game = ordered_results.any? {|x| x.team.players.size > 1 }
 
-    <<~RES
+    table = ordered_results.map do |r|
+      columns = []
+      columns << begin
+        s = "#{r.place.ordinalize}: #{r.team.players.map(&:name).join(' + ')}"
+        if r.score.present?
+          "#{s} scored #{r.score}"
+        else
+          s
+        end
+      end
+      if !team_game
+        columns <<
+          r.team.players.first.generate_text_response_for(
+            match: self,
+            include_name: false
+          )
+      end
+      columns
+    end
+
+    column_widths = table.transpose.map {|c| c.map(&:length).max }
+
+    result = <<~RES
       *Match Result for #{game.name}*
 
       ```
       #{
-        ordered_results.map do |r, _i|
-          s = "#{r.place.ordinalize}: #{r.team.players.map(&:name).join(' + ')}"
-          if r.score.present?
-            "#{s} scored #{r.score}"
-          else
-            s
-          end
-        end.join("\n")
-      }
-      ```
-
-      *Player Stats*:
-
-      ```
-      #{
-        ordered_results
-          .map { |r| r.team.players }
-          .flatten
-          .map { |p| p.generate_text_response_for(match: self) }
-          .join("\n")
+        table.map {|row|
+          row.zip(column_widths).map {|r, w| "%-#{w}s" % r }.join(" | ").strip
+        }.join("\n")
       }
       ```
     RES
+
+    if team_game
+      result += <<~RES
+
+        *Player Stats*:
+
+        ```
+        #{
+          ordered_results
+            .map { |r| r.team.players }
+            .flatten
+            .map { |p| p.generate_text_response_for(match: self) }
+            .join("\n")
+        }
+        ```
+      RES
+    end
+
+    result
   end
 
   def generate_web_response

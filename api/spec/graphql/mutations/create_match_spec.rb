@@ -40,27 +40,8 @@ RSpec.describe Mutations::CreateMatch, type: :model do
         }
       GQL
 
-      text = <<~RES
-        *Match Result for Super Smash Bros*
-
-        ```
-        1st: #{player_one.name}
-        2nd: #{player_two.name}
-        3rd: #{player_three.name}
-        4th: #{player_four.name}
-        ```
-
-        *Player Stats*:
-
-        ```
-        #{player_one.name}: 3320 (+820)
-        #{player_two.name}: 2740 (+240)
-        #{player_three.name}: 2259 (-241)
-        #{player_four.name}: 1679 (-821)
-        ```
-      RES
-
-      expect(Commands::PostToSlack).to receive(:run).with(channel_id: game.slack_channel_id, text:)
+      expect(Commands::PostToSlack).to receive(:run)
+        .with(channel_id: game.slack_channel_id, text: /Match Result for/)
 
       result = execute(query, variables: { gameId: game.id, results: [
         { players: [player_one.id], place: 1 },
