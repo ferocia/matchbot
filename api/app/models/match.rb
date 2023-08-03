@@ -77,7 +77,7 @@ class Match < ApplicationRecord
       columns << begin
         s = "#{r.place.ordinalize}: #{r.team.players.map(&:name).join(' + ')}"
         if r.score.present?
-          "#{s} scored #{r.score}"
+          "#{s} (#{format_score(r.score)})"
         else
           s
         end
@@ -142,5 +142,15 @@ class Match < ApplicationRecord
         end.join(", ")
       }
     RES
+  end
+
+  private
+
+  def format_score(x)
+    if x.to_i == x
+      x.to_i
+    else
+      x
+    end.to_s
   end
 end

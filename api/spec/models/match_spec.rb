@@ -108,6 +108,7 @@ RSpec.describe Match, type: :model do
       results = teams.each_with_index.map do |team, i|
         { team: team, place: i + 1, score: i }
       end
+      results[3][:score] = 3.5
 
       # insert the results in an abitrary order to ensure it doesn't matter
       match.results.create([results[2], results[0], results[1], results[3]])
@@ -119,10 +120,10 @@ RSpec.describe Match, type: :model do
         *Match Result for Billiards*
 
         ```
-        1st: abby scored 0.0    | 3320 (+820)
-        2nd: barry scored 1.0   | 2740 (+240)
-        3rd: celeste scored 2.0 | 2259 (-241)
-        4th: don scored 3.0     | 1679 (-821)
+        1st: abby (0)    | 3320 (+820)
+        2nd: barry (1)   | 2740 (+240)
+        3rd: celeste (2) | 2259 (-241)
+        4th: don (3.5)   | 1679 (-821)
         ```
       RES
     end
