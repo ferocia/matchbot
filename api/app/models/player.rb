@@ -14,7 +14,7 @@ class Player < ApplicationRecord
     ratings.find_by(game: game)
   end
 
-  def generate_text_response_for(match:)
+  def generate_text_response_for(match:, include_name: true)
     current, previous =
       rating_events.joins(:match).where(matches: { game_id: match.game_id })
         .order(created_at: :desc)
@@ -35,6 +35,10 @@ class Player < ApplicationRecord
         delta
       end
 
-    "#{name}: #{current.public_mean} (#{delta_text})"
+    if include_name
+      "#{name}: #{current.public_mean} (#{delta_text})"
+    else
+      "#{current.public_mean} (#{delta_text})"
+    end
   end
 end

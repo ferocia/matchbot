@@ -4,10 +4,10 @@ require 'rails_helper'
 
 RSpec.describe Match, type: :model do
   let(:match) { create(:match) }
-  let(:player_one) { create(:player) }
-  let(:player_two) { create(:player) }
-  let(:player_three) { create(:player) }
-  let(:player_four) { create(:player) }
+  let(:player_one) { create(:player, name: 'abby') }
+  let(:player_two) { create(:player, name: 'barry') }
+  let(:player_three) { create(:player, name: 'celeste') }
+  let(:player_four) { create(:player, name: 'don') }
   let(:players) { [player_one, player_two, player_three, player_four] }
   let(:teams) { players.map { |p| Team.find_or_create_by_players([p]) } }
 
@@ -53,19 +53,77 @@ RSpec.describe Match, type: :model do
         *Match Result for Billiards*
 
         ```
-        1st: #{player_one.name}
-        2nd: #{player_two.name}
-        3rd: #{player_three.name}
-        4th: #{player_four.name}
+        1st: abby    | 3320 (+820)
+        2nd: barry   | 2740 (+240)
+        3rd: celeste | 2259 (-241)
+        4th: don     | 1679 (-821)
+        ```
+      RES
+    end
+  end
+
+  context 'for a team match' do
+    let(:teams) { [
+      Team.find_or_create_by_players(players[0..1]),
+      Team.find_or_create_by_players(players[2..3])
+    ]}
+
+    before do
+      match.game.ensure_ratings_created_for!(players)
+
+      results = teams.each_with_index.map do |team, i|
+        { team: team, place: i + 1 }
+      end
+
+      # insert the results in an abitrary order to ensure it doesn't matter
+      match.results.create([results[1], results[0]])
+      match.calculate_ratings_for_players!
+    end
+
+    it 'generates correct text response' do
+      expect(match.generate_text_response).to eq <<~RES
+        *Match Result for Billiards*
+
+        ```
+        1st: abby + barry
+        2nd: celeste + don
         ```
 
         *Player Stats*:
 
         ```
-        #{player_one.name}: 3320 (+820)
-        #{player_two.name}: 2740 (+240)
-        #{player_three.name}: 2259 (-241)
-        #{player_four.name}: 1679 (-821)
+        abby: 2806 (+306)
+        barry: 2806 (+306)
+        celeste: 2193 (-307)
+        don: 2193 (-307)
+        ```
+      RES
+    end
+  end
+
+  context 'for a scored match' do
+    before do
+      match.game.ensure_ratings_created_for!(players)
+
+      results = teams.each_with_index.map do |team, i|
+        { team: team, place: i + 1, score: i }
+      end
+      results[3][:score] = 3.5
+
+      # insert the results in an abitrary order to ensure it doesn't matter
+      match.results.create([results[2], results[0], results[1], results[3]])
+      match.calculate_ratings_for_players!
+    end
+
+    it 'generates correct text response' do
+      expect(match.generate_text_response).to eq <<~RES
+        *Match Result for Billiards*
+
+        ```
+        1st: abby (0)    | 3320 (+820)
+        2nd: barry (1)   | 2740 (+240)
+        3rd: celeste (2) | 2259 (-241)
+        4th: don (3.5)   | 1679 (-821)
         ```
       RES
     end
