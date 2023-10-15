@@ -11,7 +11,7 @@
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "framer-motion": "^10.12.16",
-    "graphql": "16.6.0",
+    "graphql": "16.8.1",
     "lodash.groupby": "4.6.0",
     "query-string": "8.1.0",
     "react": "18.2.0",
